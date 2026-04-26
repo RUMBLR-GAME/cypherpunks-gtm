@@ -1,0 +1,2307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f1ea">
+<title>CYPHERPUNKS · GTM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f1ea;
+  --bg-2:#ecebe5;
+  --paper:#fdfcf7;
+  --line:#cdc8b8;
+  --line-soft:#dfdbcb;
+  --line-faint:#e8e4d6;
+  --ink:#0d0c08;
+  --ink-2:#3a352b;
+  --ink-3:#6b6557;
+  --ink-4:#a39d8c;
+  --accent:#e8392c;
+  --accent-soft:#fbe2dc;
+  --green:#3d6e4a;
+  --amber:#b8841d;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--mono);
+  font-size:13px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  font-feature-settings:"ss01" on,"cv11" on;
+}
+::selection{background:var(--ink);color:var(--bg)}
+a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+a:hover{border-bottom-color:var(--accent)}
+button{font-family:var(--mono);font-size:inherit;cursor:pointer;background:none;border:none;color:inherit}
+input,select,textarea{font-family:var(--mono);font-size:inherit;color:inherit}
+
+/* ─────────────────────  LAYOUT  ───────────────────── */
+.app{display:grid;grid-template-columns:64px 1fr;min-height:100vh}
+
+/* SIDEBAR — narrow, icons only, top mark + nav + bottom utility */
+.side{
+  position:sticky;top:0;align-self:start;
+  height:100vh;
+  background:var(--bg);
+  border-right:1px solid var(--line-faint);
+  display:flex;flex-direction:column;align-items:center;
+  padding:18px 0 12px;
+  z-index:50;
+}
+.brand{
+  width:32px;height:32px;
+  display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);
+  gap:2px;
+  margin-bottom:36px;
+  flex-shrink:0;
+}
+.brand i{display:block;background:transparent;border:1.5px solid var(--ink)}
+.brand i:nth-child(1),.brand i:nth-child(4){background:var(--ink);border-color:var(--ink)}
+
+.nav{display:flex;flex-direction:column;gap:4px;width:100%;align-items:center;flex:1}
+.nav a{
+  width:40px;height:40px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink-3);
+  border:none;border-radius:0;
+  position:relative;
+  transition:background .12s,color .12s;
+}
+.nav a:hover{color:var(--ink);background:transparent}
+.nav a.on{background:var(--bg-2);color:var(--ink)}
+.nav a svg{width:20px;height:20px;stroke-width:1.5}
+.nav a .badge{
+  position:absolute;top:4px;right:4px;
+  background:var(--accent);color:#fff;
+  font-size:9px;font-weight:600;
+  width:14px;height:14px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  line-height:1;
+}
+.nav-spacer{flex:1}
+.nav-bottom{display:flex;flex-direction:column;gap:4px;align-items:center;margin-top:auto}
+
+/* MAIN CONTENT */
+.main{padding:0;min-width:0;overflow-x:hidden}
+.section{padding:32px 28px 48px;max-width:880px;margin:0 auto;border-bottom:1px solid var(--line-faint)}
+.section:last-child{border-bottom:none}
+
+/* HEAD ROW per section — eyebrow + title */
+.h-eyebrow{
+  font-size:10px;color:var(--ink-4);
+  letter-spacing:.16em;text-transform:uppercase;
+  margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+.h-eyebrow .meta{color:var(--ink-3)}
+h1.h{
+  font-size:22px;font-weight:500;letter-spacing:.02em;
+  color:var(--ink);text-transform:uppercase;
+  margin-bottom:14px;
+}
+h2.h{
+  font-size:14px;font-weight:600;letter-spacing:.08em;
+  color:var(--ink);text-transform:uppercase;
+  margin:28px 0 14px;
+}
+h3.h{
+  font-size:11px;font-weight:600;letter-spacing:.18em;
+  color:var(--ink-3);text-transform:uppercase;
+  margin:22px 0 10px;
+}
+.lede{font-size:13px;color:var(--ink-2);max-width:580px;line-height:1.7;margin-bottom:8px}
+.lede em{font-style:italic;color:var(--ink)}
+
+hr{border:none;border-top:1px solid var(--line-faint);margin:24px 0}
+
+/* PROSE block — denser, more readable */
+.prose{font-size:13px;color:var(--ink-2);line-height:1.7;max-width:580px}
+.prose p+p{margin-top:12px}
+.prose b{color:var(--ink);font-weight:600}
+.prose em{font-style:italic;color:var(--ink)}
+.hl{background:#fff0a8;padding:1px 3px}
+
+/* GRID */
+.grid{display:grid;gap:1px;background:var(--line-faint);border:1px solid var(--line-faint);margin:14px 0}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid > .cell{background:var(--bg);padding:16px}
+.cell .l{font-size:9.5px;color:var(--ink-4);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.cell .v{font-size:18px;color:var(--ink);font-weight:500}
+.cell .x{font-size:11px;color:var(--ink-3);margin-top:4px}
+.cell p{font-size:12.5px;color:var(--ink-2);line-height:1.55}
+
+/* LIST ROW (artists/collectors style — like the screenshot) */
+.list{margin:8px 0 14px}
+.row{
+  display:grid;
+  grid-template-columns:36px 1fr auto 10px auto;
+  align-items:center;gap:12px;
+  padding:14px 4px;
+  border-bottom:1px solid var(--line-faint);
+  cursor:pointer;
+  transition:background .1s;
+}
+.row:hover{background:var(--bg-2)}
+.row .av{
+  width:34px;height:34px;border-radius:4px;
+  background:var(--ink);color:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;letter-spacing:.04em;
+  flex-shrink:0;overflow:hidden;
+}
+.row .av.c1{background:#1a1814;color:#fff}
+.row .av.c2{background:#c8442a;color:#fff}
+.row .av.c3{background:#3d6e4a;color:#fff}
+.row .av.c4{background:#1f3d2e;color:#fff}
+.row .av.c5{background:#b8841d;color:#fff}
+.row .av.c6{background:#5b4a8c;color:#fff}
+.row .av.c7{background:#88323d;color:#fff}
+.row .av.c8{background:#0d3b66;color:#fff}
+.row .nm{font-size:13px;color:var(--ink);font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .nm small{color:var(--ink-3);font-weight:400;display:block;font-size:10.5px;margin-top:2px;letter-spacing:.04em}
+.row .ic{display:flex;gap:8px;color:var(--ink-4)}
+.row .ic svg{width:14px;height:14px;stroke-width:1.5}
+.row .pr{font-size:12px;color:var(--ink-3);font-weight:500;white-space:nowrap}
+.row .chev{color:var(--ink-4);transition:transform .15s}
+.row.open .chev{transform:rotate(180deg)}
+.row.open{border-bottom-color:transparent;background:var(--bg-2)}
+.row .sd{
+  width:8px;height:8px;border-radius:50%;
+  background:transparent;border:1px solid var(--line);
+  display:inline-block;flex-shrink:0;
+}
+.row .sd[data-sd-state="1"]{background:var(--amber);border-color:var(--amber)}
+.row .sd[data-sd-state="2"]{background:#5b4a8c;border-color:#5b4a8c}
+.row .sd[data-sd-state="3"]{background:var(--green);border-color:var(--green)}
+
+/* EXPANDED detail block under row */
+.exp{
+  display:none;
+  padding:0 4px 18px;
+  border-bottom:1px solid var(--line-faint);
+  background:var(--bg-2);
+  margin-bottom:0;
+}
+.exp.show{display:block}
+.exp-pad{padding:4px 16px 16px}
+
+/* PIPELINE pill — 4-state click-cycle */
+.pip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  padding:5px 9px;
+  border:1px solid var(--line);background:var(--bg);
+  color:var(--ink-3);
+  cursor:pointer;
+  font-family:var(--mono);font-weight:500;
+  transition:.1s;
+  white-space:nowrap;
+}
+.pip::before{
+  content:"";width:6px;height:6px;border-radius:50%;
+  background:var(--ink-4);display:inline-block;
+}
+.pip[data-state="0"]{border-color:var(--line);color:var(--ink-3)}
+.pip[data-state="0"]::before{background:var(--ink-4)}
+.pip[data-state="1"]{border-color:var(--amber);color:var(--amber);background:#fdf6e3}
+.pip[data-state="1"]::before{background:var(--amber)}
+.pip[data-state="2"]{border-color:#5b4a8c;color:#5b4a8c;background:#f0edf7}
+.pip[data-state="2"]::before{background:#5b4a8c}
+.pip[data-state="3"]{border-color:var(--green);color:var(--green);background:#e8f0e9}
+.pip[data-state="3"]::before{background:var(--green)}
+
+/* COPY block */
+.cp{border:1px solid var(--line-faint);background:var(--paper);margin:10px 0}
+.cp-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:8px 12px;
+  border-bottom:1px solid var(--line-faint);
+  background:var(--bg);
+}
+.cp-head .l{font-size:9.5px;letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase}
+.cp-body{
+  padding:14px 16px;
+  font-size:12.5px;line-height:1.7;color:var(--ink);
+  white-space:pre-wrap;word-wrap:break-word;
+}
+.cp-foot{
+  padding:8px 12px;
+  border-top:1px solid var(--line-faint);
+  background:var(--bg);
+  font-size:10px;color:var(--ink-3);letter-spacing:.04em;
+  display:flex;justify-content:space-between;gap:10px;
+}
+.cbtn{
+  font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  border:1px solid var(--line);padding:5px 9px;
+  background:var(--bg);color:var(--ink);
+  font-weight:500;
+}
+.cbtn:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cbtn.ok{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* SEARCH BAR — matches the screenshot */
+.searchbar{
+  display:grid;grid-template-columns:1fr auto auto;gap:8px;
+  margin-bottom:18px;
+}
+.searchbar input{
+  border:1px solid var(--line);
+  background:var(--bg);
+  padding:11px 14px;
+  font-size:12px;color:var(--ink);
+  letter-spacing:.02em;
+  outline:none;width:100%;
+}
+.searchbar input::placeholder{color:var(--ink-4)}
+.searchbar input:focus{border-color:var(--ink)}
+.searchbar .filt{
+  border:1px solid var(--line);
+  background:var(--bg);
+  padding:11px 12px;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  display:flex;align-items:center;gap:6px;color:var(--ink);
+  white-space:nowrap;
+}
+.searchbar .filt svg{width:13px;height:13px}
+.searchbar .filt.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* CRM expanded fields */
+.crm-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.crm-grid{
+  display:grid;grid-template-columns:160px 1fr;gap:10px;
+  margin-bottom:14px;
+}
+.crm-fld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.crm-l{
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-4);font-weight:500;
+}
+.crm-date,.crm-notes{
+  border:1px solid var(--line);
+  background:var(--bg);
+  padding:8px 10px;
+  font-size:11.5px;color:var(--ink);
+  font-family:var(--mono);
+  outline:none;border-radius:0;
+  width:100%;
+}
+.crm-date:focus,.crm-notes:focus{border-color:var(--ink)}
+.crm-notes{resize:vertical;min-height:42px;line-height:1.5}
+.crm-meta{font-size:11.5px;color:var(--ink-2);margin-bottom:6px;line-height:1.55}
+.crm-meta b{color:var(--ink);font-weight:600}
+.crm-send{color:var(--ink-3);margin-bottom:14px}
+
+/* Tier-color tag chips */
+.tag.t1{border-color:#e8392c;color:#e8392c}
+.tag.t2{border-color:#b8841d;color:#b8841d}
+.tag.t3{border-color:#3d6e4a;color:#3d6e4a}
+
+/* Inline CRM strip (tweets, emails) — sits below cp-body */
+.cp-crm{
+  display:grid;grid-template-columns:auto 130px 1fr;gap:8px;
+  padding:8px 12px;
+  border-top:1px solid var(--line-faint);
+  background:var(--bg);
+  align-items:center;
+}
+.cp-crm .pip{margin:0}
+.crm-date-inline,.crm-notes-inline{
+  border:1px solid var(--line);
+  background:var(--bg);
+  padding:7px 10px;
+  font-size:11px;color:var(--ink);
+  font-family:var(--mono);
+  outline:none;border-radius:0;
+  width:100%;min-width:0;
+}
+.crm-date-inline:focus,.crm-notes-inline:focus{border-color:var(--ink)}
+.crm-notes-inline::placeholder{color:var(--ink-4)}
+
+/* Task notes — small input under each task row */
+.tk-item{margin-bottom:4px}
+.tk-item .tk-row{margin-bottom:0;border-bottom:none}
+.tk-note{
+  display:block;width:100%;
+  border:1px solid var(--line-faint);border-top:none;
+  background:var(--bg);
+  padding:7px 12px 7px 96px;
+  font-size:11px;color:var(--ink-2);
+  font-family:var(--mono);
+  outline:none;border-radius:0;
+  margin-bottom:4px;
+}
+.tk-note:focus{border-color:var(--ink);color:var(--ink)}
+.tk-note::placeholder{color:var(--ink-4)}
+.tk-note:placeholder-shown{color:var(--ink-4)}
+
+/* Utility row (export / reset) */
+.util-row{
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  margin:8px 0 6px;padding-top:4px;
+}
+.util-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  border:1px solid var(--line);background:var(--bg);
+  padding:7px 11px;
+  font-family:var(--mono);font-size:10px;font-weight:500;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink);
+}
+.util-btn:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.util-btn:hover svg{stroke:var(--bg)}
+.util-hint{font-size:10px;color:var(--ink-4);margin-left:4px;letter-spacing:.04em}
+@media (max-width:760px){.util-hint{flex:1 0 100%;margin:4px 0 0}}
+
+/* SEGMENTED tabs (like screenshot's ARTISTS/COLLECTORS pair) */
+.seg{
+  display:grid;grid-auto-flow:column;grid-auto-columns:1fr;
+  border:1px solid var(--line-faint);
+  background:var(--bg);
+  margin-bottom:18px;
+}
+.seg button{
+  padding:13px 12px;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:500;
+  border-right:1px solid var(--line-faint);
+  background:transparent;
+}
+.seg button:last-child{border-right:none}
+.seg button.on{background:var(--bg-2);color:var(--ink);font-weight:600}
+.panel{display:none}
+.panel.on{display:block}
+
+/* CALENDAR */
+.cal-wrap{margin:10px 0 18px}
+.cal{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:1px;background:var(--line-faint);
+  border:1px solid var(--line-faint);
+}
+.cal-head,.cal-d{background:var(--bg);padding:8px 9px;min-height:0}
+.cal-head{
+  background:var(--bg-2);
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);padding:6px 9px;
+}
+.cal-d{
+  min-height:108px;
+  display:flex;flex-direction:column;gap:5px;
+  font-size:10.5px;line-height:1.4;
+}
+.cal-d .dn{display:flex;justify-content:space-between;align-items:center}
+.cal-d .dn .num{font-size:10px;color:var(--ink-4);font-weight:600}
+.cal-d .dn .ph{font-size:8px;letter-spacing:.1em;color:var(--ink-4);text-transform:uppercase}
+.cal-d.mint{background:var(--accent-soft);border-left:2px solid var(--accent)}
+.cal-d.mint .dn .ph{color:var(--accent)}
+.cal-d.event{background:#fdf6e3}
+.cal-d .a{color:var(--ink-2)}
+.cal-d .a b{color:var(--ink);font-weight:600}
+.cal-d .tg{
+  display:inline-block;font-size:8px;letter-spacing:.06em;text-transform:uppercase;
+  padding:1px 4px;background:var(--bg-2);border:1px solid var(--line-faint);
+  color:var(--ink-3);margin-right:2px;line-height:1.5;
+}
+.cal-d .tg.tw{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cal-d .tg.dm{background:#1f3d2e;color:#fff;border-color:#1f3d2e}
+.cal-d .tg.em{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cal-d .tg.ev{background:var(--amber);color:#fff;border-color:var(--amber)}
+
+/* HEATMAP */
+.heat{margin:10px 0 14px}
+.heat-grid{
+  display:grid;grid-template-columns:42px repeat(24,1fr);
+  gap:2px;font-size:9px;color:var(--ink-3);
+}
+.heat-grid .hh{padding:2px 0;text-align:center;color:var(--ink-4);font-size:8px}
+.heat-grid .hd{padding:3px 4px 3px 0;color:var(--ink-3);font-size:9px;text-align:right}
+.heat-grid .hc{aspect-ratio:1.5/1;background:var(--bg-2);border-radius:1px;cursor:help}
+.heat-grid .hc[data-v="0"]{background:#ecebe5}
+.heat-grid .hc[data-v="1"]{background:#f5d6c8}
+.heat-grid .hc[data-v="2"]{background:#f0a884}
+.heat-grid .hc[data-v="3"]{background:#e8755a}
+.heat-grid .hc[data-v="4"]{background:#e8392c}
+.heat-grid .hc[data-v="5"]{background:#a01e10}
+.heat-leg{
+  display:flex;align-items:center;gap:8px;
+  font-size:9px;color:var(--ink-3);
+  margin-top:10px;
+}
+.heat-leg .scale{display:flex;gap:2px}
+.heat-leg .scale span{width:13px;height:8px;display:inline-block}
+
+/* CHART */
+.chart{padding:14px 4px;margin:10px 0 14px;background:var(--bg);border:1px solid var(--line-faint)}
+.chart svg{width:100%;height:auto;display:block}
+.chart-foot{
+  display:flex;flex-wrap:wrap;gap:14px;
+  padding:12px 14px 0;margin-top:10px;
+  border-top:1px solid var(--line-faint);
+  font-size:9.5px;color:var(--ink-3);
+}
+.chart-foot button{
+  display:flex;align-items:center;gap:6px;
+  font-size:9.5px;letter-spacing:.04em;
+  color:var(--ink-3);
+  cursor:pointer;
+  padding:4px 0;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  font-weight:500;
+}
+.chart-foot button.off{opacity:.35}
+.chart-foot button .sw{width:14px;height:3px;display:inline-block;background:var(--ink-3)}
+
+/* TASK row (tracker) */
+.tk{margin:6px 0 10px}
+.tk-row{
+  display:grid;
+  grid-template-columns:24px 64px 1fr;
+  gap:10px;align-items:center;
+  padding:9px 12px;
+  background:var(--bg);
+  border:1px solid var(--line-faint);
+  margin-bottom:4px;
+  font-size:12px;
+  cursor:pointer;
+}
+.tk-row:hover{background:var(--bg-2)}
+.tk-row.done{opacity:.5}
+.tk-row.done .what{text-decoration:line-through;color:var(--ink-3)}
+.tk-row .box{
+  width:14px;height:14px;
+  border:1.5px solid var(--ink-3);
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg);
+}
+.tk-row.done .box{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.tk-row.done .box::after{content:"✓";color:var(--bg);font-size:10px;line-height:1}
+.tk-row .when{font-size:9.5px;color:var(--ink-4);letter-spacing:.06em;font-weight:500}
+.tk-row .what{color:var(--ink)}
+
+/* PROGRESS bars at top of tracker */
+.prog-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:1px;background:var(--line-faint);
+  border:1px solid var(--line-faint);
+  margin:10px 0 18px;
+}
+.prog-cell{background:var(--bg);padding:14px 12px}
+.prog-cell .l{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4);margin-bottom:6px}
+.prog-cell .v{font-size:18px;color:var(--ink);font-weight:500;margin-bottom:6px}
+.prog-cell .v .total{color:var(--ink-4);font-size:13px}
+.prog-cell .bar{height:3px;background:var(--bg-2);position:relative;overflow:hidden}
+.prog-cell .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+
+/* RISK row */
+.risk{
+  display:grid;grid-template-columns:1fr auto;gap:14px;
+  padding:14px 4px;
+  border-bottom:1px solid var(--line-faint);
+  align-items:start;
+}
+.risk:last-child{border-bottom:none}
+.risk h4{font-size:12px;color:var(--ink);font-weight:600;margin-bottom:4px;letter-spacing:.02em}
+.risk p{font-size:12px;color:var(--ink-2);line-height:1.6}
+.risk .pb{
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;
+  padding:3px 7px;border:1px solid var(--line);
+  white-space:nowrap;color:var(--ink-3);
+}
+.risk .pb.h{color:var(--accent);border-color:var(--accent)}
+.risk .pb.m{color:var(--amber);border-color:var(--amber)}
+.risk .pb.l{color:var(--green);border-color:var(--green)}
+
+/* MINI tag chip */
+.tag{
+  display:inline-block;
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 6px;
+  border:1px solid var(--line-faint);background:var(--bg);
+  color:var(--ink-3);margin-right:3px;
+}
+
+/* INTERNAL ANCHORED nav for in-page back-to-top */
+.toc{
+  position:sticky;top:0;
+  background:var(--bg);
+  border-bottom:1px solid var(--line-faint);
+  display:none;
+  padding:8px 12px;
+  z-index:20;
+  font-size:10px;color:var(--ink-3);
+}
+
+/* ─────────────────────  RESPONSIVE  ───────────────────── */
+/* tablet/small-desktop tightening */
+@media (max-width:1024px){
+  .section{padding:30px 24px 40px}
+}
+
+/* mobile */
+@media (max-width:760px){
+  .app{grid-template-columns:1fr;padding-bottom:60px}
+  .side{
+    position:fixed;bottom:0;left:0;right:0;top:auto;
+    height:60px;width:100vw;
+    flex-direction:row;align-items:center;justify-content:space-around;
+    border-right:none;border-top:1px solid var(--line);
+    padding:0 4px;
+    background:var(--bg);
+    z-index:200;
+  }
+  .brand{display:none}
+  .nav{flex-direction:row;gap:0;justify-content:space-around;width:100%;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
+  .nav a{width:auto;flex:1 0 44px;height:60px;min-width:44px}
+  .nav a svg{width:18px;height:18px}
+  .nav-bottom{display:none}
+  .section{padding:22px 16px 28px;max-width:100%}
+  .h-eyebrow{flex-direction:column;align-items:flex-start;gap:4px}
+  h1.h{font-size:18px}
+  h2.h{font-size:13px;margin:22px 0 10px}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .cal{grid-template-columns:repeat(2,1fr)}
+  .cal-head{display:none}
+  .cal-d{min-height:auto}
+  .heat-grid{grid-template-columns:30px repeat(24,1fr);font-size:7px;gap:1px}
+  .heat-grid .hh{font-size:6.5px}
+  .heat-grid .hd{font-size:8px;padding:2px 2px 2px 0}
+  .row{grid-template-columns:30px 1fr 10px auto;gap:10px;padding:11px 0}
+  .row .av{width:30px;height:30px;font-size:10px}
+  .row .ic{display:none}
+  .row .pr{font-size:11px}
+  .row .nm small{font-size:10px}
+  .searchbar{
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:auto auto;
+    gap:6px;
+  }
+  .searchbar input{grid-column:1 / -1}
+  .searchbar .filt{padding:9px 10px;font-size:9.5px;justify-content:center}
+  .crm-bar{gap:6px}
+  .crm-grid{grid-template-columns:1fr;gap:8px}
+  .seg button{padding:11px 6px;font-size:10px;letter-spacing:.08em}
+  .tk-row{grid-template-columns:20px 56px 1fr;gap:8px;padding:10px}
+  .tk-row .when{font-size:9px}
+  .cp-body{font-size:12px;padding:12px 14px}
+  .chart-foot{gap:8px;font-size:9px;padding:10px 12px 0}
+  .chart-foot button{font-size:9px;letter-spacing:.06em}
+  .risk{grid-template-columns:1fr;gap:6px}
+  .risk .pb{justify-self:start}
+  .pip{font-size:9px;padding:5px 8px}
+  .exp-pad{padding:4px 12px 14px}
+  .cp-crm{
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:auto auto;
+    gap:6px;
+  }
+  .cp-crm .pip{grid-column:1 / -1;justify-self:start}
+  .cp-crm .crm-notes-inline{grid-column:1 / -1}
+  .tk-note{padding:7px 10px 7px 76px;font-size:10.5px}
+}
+
+/* extra-narrow phones */
+@media (max-width:380px){
+  .section{padding:20px 14px 24px}
+  h1.h{font-size:16px}
+  .nav a{flex:1 0 38px;min-width:38px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="side">
+  <div class="brand"><i></i><i></i><i></i><i></i></div>
+  <nav class="nav">
+    <a href="#brief" class="on" data-nav="brief" title="Brief"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></a>
+    <a href="#calendar" data-nav="calendar" title="Calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></a>
+    <a href="#growth" data-nav="growth" title="Growth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></a>
+    <a href="#artists" data-nav="artists" title="Targets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></a>
+    <a href="#twitter" data-nav="twitter" title="Twitter copy"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+    <a href="#emails" data-nav="emails" title="Emails"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+    <a href="#heatmap" data-nav="heatmap" title="Heatmap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7" fill="currentColor"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7" fill="currentColor"/></svg></a>
+    <a href="#mintday" data-nav="mintday" title="Mint day"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></a>
+    <a href="#tracker" data-nav="tracker" title="Tracker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="badge" id="trackerCount">0</span></a>
+    <a href="#risks" data-nav="risks" title="Risks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></a>
+  </nav>
+</aside>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<main class="main">
+
+<!-- ═════ 01 BRIEF ═════ -->
+<section class="section" id="brief">
+  <div class="h-eyebrow"><span>01 / Brief</span><span class="meta">v2.0 · 30d window</span></div>
+  <h1 class="h">Read this first.</h1>
+  <p class="lede">If a teammate joins on day 14, this is the page they read.</p>
+
+  <hr>
+
+  <div class="prose">
+    <p><b>What we're launching.</b> 10,000 pixel art keys on Ethereum, ERC-721, auctioned <em>one per day for ~22 years</em>. Holding a CypherPunk grants curation votes, gated commentary, and listing rights across CURAT'D, HASH'D, LIMIT'D. <span class="hl">Selling auto-removes you from the curated roster, on-contract.</span> Skin in the game is the entry condition, not a slogan.</p>
+    <p><b>Three goals, equally weighted.</b> A real day-1 auction with real bidders. Credibility with the collectors who buy 1/1s on SuperRare. A founding artist roster of 12-20 names whose presence on CURAT'D legitimizes the platform.</p>
+    <p><b>Hard constraints.</b> 30-day clock. Lean team. No paid KOL deals. No allowlist hacks. No Discord.</p>
+  </div>
+
+  <h2 class="h">Three sentences. Whole pitch.</h2>
+  <div class="grid grid-3">
+    <div class="cell"><div class="l">For collectors</div><p>"The contract removes you when you sell. That's the whole pitch."</p></div>
+    <div class="cell"><div class="l">For artists</div><p>"Curation as a primitive, not a permission."</p></div>
+    <div class="cell"><div class="l">For anyone, in any room</div><p>"One auction a day, twenty two years, holders decide the roster."</p></div>
+  </div>
+
+  <h2 class="h">The one sentence to internalize.</h2>
+  <p class="prose">Goal of these 30 days is not to make people <em>excited</em> about CypherPunks — it is to make 100 specific people feel they would be <em>missing something</em> by not paying attention. Excitement is a bell curve. Missing-out is a hook.</p>
+
+  <h2 class="h">Today's quick state</h2>
+  <div class="prog-grid" id="briefStats">
+    <div class="prog-cell"><div class="l">DMs sent</div><div class="v"><span data-stat="sent">0</span><span class="total"> / 46</span></div><div class="bar"><i data-bar="sent" style="width:0%"></i></div></div>
+    <div class="prog-cell"><div class="l">Replies</div><div class="v"><span data-stat="reply">0</span><span class="total"> / 46</span></div><div class="bar"><i data-bar="reply" style="width:0%"></i></div></div>
+    <div class="prog-cell"><div class="l">Confirmed</div><div class="v"><span data-stat="conf">0</span><span class="total"> / 46</span></div><div class="bar"><i data-bar="conf" style="width:0%"></i></div></div>
+    <div class="prog-cell"><div class="l">Tweets shipped</div><div class="v"><span data-stat="tweets">0</span><span class="total"> / 14</span></div><div class="bar"><i data-bar="tweets" style="width:0%"></i></div></div>
+    <div class="prog-cell"><div class="l">Emails sent</div><div class="v"><span data-stat="emails">0</span><span class="total"> / 5</span></div><div class="bar"><i data-bar="emails" style="width:0%"></i></div></div>
+    <div class="prog-cell"><div class="l">Tasks done</div><div class="v"><span data-stat="task">0</span><span class="total"> / 27</span></div><div class="bar"><i data-bar="task" style="width:0%"></i></div></div>
+  </div>
+
+  <div class="util-row">
+    <button class="util-btn" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>EXPORT CSV</button>
+    <button class="util-btn" id="resetBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>RESET ALL</button>
+    <span class="util-hint">All state saves to your browser only. Export to back up.</span>
+  </div>
+</section>
+
+<!-- ═════ 02 CALENDAR ═════ -->
+<section class="section" id="calendar">
+  <div class="h-eyebrow"><span>02 / 30-day calendar</span><span class="meta">mint = D27</span></div>
+  <h1 class="h">The march, day by day.</h1>
+  <p class="lede">Every day has a job. Mint is Saturday, the rare hour where US morning, EU evening &amp; Asian late-night overlap awake.</p>
+
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin:14px 0">
+    <span class="tag"><span style="display:inline-block;width:8px;height:8px;background:#0d0c08;margin-right:4px;vertical-align:middle"></span>TWEET</span>
+    <span class="tag"><span style="display:inline-block;width:8px;height:8px;background:#1f3d2e;margin-right:4px;vertical-align:middle"></span>DM</span>
+    <span class="tag"><span style="display:inline-block;width:8px;height:8px;background:#e8392c;margin-right:4px;vertical-align:middle"></span>EMAIL</span>
+    <span class="tag"><span style="display:inline-block;width:8px;height:8px;background:#b8841d;margin-right:4px;vertical-align:middle"></span>EVENT</span>
+  </div>
+
+  <h3 class="h">Week 1 · Groundwork</h3>
+  <div class="cal">
+    <div class="cal-head">MON</div><div class="cal-head">TUE</div><div class="cal-head">WED</div><div class="cal-head">THU</div><div class="cal-head">FRI</div><div class="cal-head">SAT</div><div class="cal-head">SUN</div>
+    <div class="cal-d"><div class="dn"><span class="num">D1</span><span class="ph">GROUND</span></div><div class="a"><b>Lock surfaces.</b> Bio, pinned, header.</div><div class="a"><span class="tg tw">tw</span> T-01 · 14:00</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D2</span></div><div class="a">Build target list. Verify every handle.</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D3</span></div><div class="a">Begin warm engagement on T1 artist posts.</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D4</span></div><div class="a"><span class="tg tw">tw</span> T-02 · 22:00</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D5</span></div><div class="a">Final manifesto polish. DMs reviewed.</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D6</span></div><div class="a">Quiet day. Weekend engagement.</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D7</span></div><div class="a"><span class="tg tw">tw</span> T-03 · Sun 21:00</div></div>
+  </div>
+
+  <h3 class="h">Week 2 · Seeding</h3>
+  <div class="cal">
+    <div class="cal-head">MON</div><div class="cal-head">TUE</div><div class="cal-head">WED</div><div class="cal-head">THU</div><div class="cal-head">FRI</div><div class="cal-head">SAT</div><div class="cal-head">SUN</div>
+    <div class="cal-d event"><div class="dn"><span class="num">D8</span><span class="ph">SEED</span></div><div class="a"><span class="tg dm">dm</span> <b>T1 artists × 5</b></div><div class="a">XCOPY · Coldie · Hackatao · Aversano · Gremplin</div></div>
+    <div class="cal-d event"><div class="dn"><span class="num">D9</span></div><div class="a"><span class="tg dm">dm</span> <b>T1 artists × 5</b></div><div class="a">Cherniak · Silver · DeeKay · 2 reserves</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D10</span></div><div class="a">Reply where natural. No new DMs.</div></div>
+    <div class="cal-d event"><div class="dn"><span class="num">D11</span></div><div class="a"><span class="tg dm">dm</span> <b>T1 collectors</b> · only if 2+ artists yes</div></div>
+    <div class="cal-d event"><div class="dn"><span class="num">D12</span></div><div class="a"><span class="tg tw">tw</span> <b>Manifesto public.</b> 16:00. T-04.</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D13</span></div><div class="a"><span class="tg dm">dm</span> Punks-cultural · 9059, 6529</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D14</span></div><div class="a"><span class="tg tw">tw</span> T-05 · 20:00</div></div>
+  </div>
+
+  <h3 class="h">Week 3 · Ramp</h3>
+  <div class="cal">
+    <div class="cal-head">MON</div><div class="cal-head">TUE</div><div class="cal-head">WED</div><div class="cal-head">THU</div><div class="cal-head">FRI</div><div class="cal-head">SAT</div><div class="cal-head">SUN</div>
+    <div class="cal-d event"><div class="dn"><span class="num">D15</span><span class="ph">RAMP</span></div><div class="a"><span class="tg tw">tw</span><span class="tg ev">ev</span> <b>Roster reveal.</b> T-06 · 17:00</div></div>
+    <div class="cal-d event"><div class="dn"><span class="num">D16</span></div><div class="a"><span class="tg em">em</span> <b>RCS</b> · E1 · embargo</div></div>
+    <div class="cal-d event"><div class="dn"><span class="num">D17</span></div><div class="a"><span class="tg tw">tw</span> <b>Mint date.</b> T-08</div></div>
+    <div class="cal-d event"><div class="dn"><span class="num">D18</span></div><div class="a"><span class="tg em">em</span> <b>NFT Now</b> · E2</div><div class="a"><span class="tg dm">dm</span> T2 collectors</div></div>
+    <div class="cal-d event"><div class="dn"><span class="num">D19</span></div><div class="a"><span class="tg ev">ev</span> <b>Twitter Space.</b> 21:00</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D20</span></div><div class="a">Personal follow-up DMs.</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D21</span></div><div class="a"><span class="tg tw">tw</span> Recap thread T-13 · 19:00</div></div>
+  </div>
+
+  <h3 class="h">Week 4 · Ignite</h3>
+  <div class="cal">
+    <div class="cal-head">MON</div><div class="cal-head">TUE</div><div class="cal-head">WED</div><div class="cal-head">THU</div><div class="cal-head">FRI</div><div class="cal-head">SAT</div><div class="cal-head">SUN</div>
+    <div class="cal-d"><div class="dn"><span class="num">D22</span><span class="ph">IGNITE</span></div><div class="a"><span class="tg tw">tw</span> Manifesto excerpt · 22:00</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D23</span></div><div class="a"><span class="tg em">em</span> Decrypt · E3</div></div>
+    <div class="cal-d event"><div class="dn"><span class="num">D24</span></div><div class="a"><span class="tg em">em</span> Podcasts × 4</div><div class="a"><span class="tg dm">dm</span> T3 begins</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D25</span></div><div class="a"><span class="tg tw">tw</span> Spotlight #1</div></div>
+    <div class="cal-d"><div class="dn"><span class="num">D26</span></div><div class="a"><span class="tg tw">tw</span> <b>"Tomorrow."</b> T-09 · 19:00</div></div>
+    <div class="cal-d mint"><div class="dn"><span class="num">D27</span><span class="ph">MINT</span></div><div class="a"><b>AUCTION #1 LIVE.</b> 16:00</div><div class="a"><span class="tg tw">tw</span> T-10, T-11</div></div>
+    <div class="cal-d event"><div class="dn"><span class="num">D28</span></div><div class="a"><span class="tg tw">tw</span> T-12. Auction #2 live.</div></div>
+  </div>
+
+  <p class="lede" style="margin-top:18px"><em>Why Saturday for mint?</em> Crypto-art Twitter is heaviest weekends. Sat 16:00 UTC = morning ET, evening CET, late-night Asia — the rare hour where all three time zones overlap awake. Avoid Friday (people log off), Sunday (Asian engagement craters by Sun evening).</p>
+</section>
+
+<!-- ═════ 03 GROWTH ═════ -->
+<section class="section" id="growth">
+  <div class="h-eyebrow"><span>03 / Growth projection</span><span class="meta">@cypherpunksart</span></div>
+  <h1 class="h">30-day forecast.</h1>
+  <p class="lede">Three scenarios, organic only. Tap the legend to toggle each curve. <em>Floor</em> = founding artists slip. <em>Target</em> = realistic plan. <em>Ceiling</em> = everything lands.</p>
+
+  <div class="chart">
+    <svg viewBox="0 0 920 360" xmlns="http://www.w3.org/2000/svg" style="font-family:JetBrains Mono,monospace;font-size:10px" id="growthChart">
+      <g stroke="#e8e4d6" stroke-width="1">
+        <line x1="50" y1="50" x2="900" y2="50"/><line x1="50" y1="115" x2="900" y2="115"/><line x1="50" y1="180" x2="900" y2="180"/><line x1="50" y1="245" x2="900" y2="245"/><line x1="50" y1="310" x2="900" y2="310"/>
+      </g>
+      <g fill="#a39d8c" font-size="10">
+        <text x="44" y="54" text-anchor="end">10k</text><text x="44" y="119" text-anchor="end">7.5k</text><text x="44" y="184" text-anchor="end">5k</text><text x="44" y="249" text-anchor="end">2.5k</text><text x="44" y="314" text-anchor="end">0</text>
+      </g>
+      <g fill="#a39d8c" font-size="10" text-anchor="middle">
+        <text x="50" y="334">D0</text><text x="192" y="334">D5</text><text x="333" y="334">D10</text><text x="475" y="334">D15</text><text x="617" y="334">D20</text><text x="758" y="334">D25</text><text x="900" y="334">D30</text>
+      </g>
+      <!-- catalyst guides -->
+      <g stroke="#cdc8b8" stroke-width="1" stroke-dasharray="2,3">
+        <line x1="390" y1="50" x2="390" y2="310"/><line x1="475" y1="50" x2="475" y2="310"/><line x1="588" y1="50" x2="588" y2="310"/><line x1="815" y1="50" x2="815" y2="310"/>
+      </g>
+      <g fill="#6b6557" font-size="9" text-anchor="middle" letter-spacing="0.1em">
+        <text x="390" y="42">MANIFESTO</text><text x="475" y="42">REVEAL</text><text x="588" y="42">SPACE</text><text x="815" y="42">MINT</text>
+      </g>
+      <!-- ceiling -->
+      <path id="curveCeiling" d="M 50,310 L 113,308 175,302 238,294 300,283 363,271 390,259 425,238 460,212 475,200 510,176 545,154 575,134 588,124 622,103 660,84 698,68 735,55 770,46 800,42 815,40 845,32 875,26 900,22" fill="none" stroke="#e8392c" stroke-width="2.2"/>
+      <!-- target -->
+      <path id="curveTarget" d="M 50,310 L 113,308 175,304 238,298 300,289 363,278 390,270 425,254 460,234 475,225 510,208 545,194 575,182 588,176 622,164 660,150 698,138 735,128 770,118 800,110 815,106 845,98 875,90 900,84" fill="none" stroke="#1f3d2e" stroke-width="2.2"/>
+      <!-- floor -->
+      <path id="curveFloor" d="M 50,310 L 113,309 175,307 238,304 300,300 363,295 390,290 425,283 460,275 475,272 510,266 545,260 575,255 588,253 622,248 660,243 698,238 735,234 770,230 800,227 815,225 845,222 875,220 900,218" fill="none" stroke="#a39d8c" stroke-width="1.8" stroke-dasharray="3,3"/>
+      <!-- end labels -->
+      <g font-size="11" font-weight="600">
+        <text x="906" y="26" fill="#e8392c">8.0k</text><text x="906" y="88" fill="#1f3d2e">4.0k</text><text x="906" y="222" fill="#a39d8c">1.5k</text>
+      </g>
+    </svg>
+    <div class="chart-foot">
+      <button data-curve="curveCeiling"><span class="sw" style="background:#e8392c"></span>CEILING · 8.0k</button>
+      <button data-curve="curveTarget"><span class="sw" style="background:#1f3d2e"></span>TARGET · 4.0k</button>
+      <button data-curve="curveFloor"><span class="sw" style="background:#a39d8c"></span>FLOOR · 1.5k</button>
+    </div>
+  </div>
+
+  <h2 class="h">What drives each scenario</h2>
+  <div class="grid grid-3">
+    <div class="cell"><div class="l">Floor · 1.5k</div><p>Manifesto lands but most T1 artists pass. No press. Mint clears modest. Conviction holders are real, auction runs.</p></div>
+    <div class="cell"><div class="l">Target · 4.0k</div><p>8-12 founding artists confirmed. One serious press. Mint clears at meaningful ETH. Catalysts compound week 4.</p></div>
+    <div class="cell"><div class="l">Ceiling · 8.0k</div><p>XCOPY or Cherniak engages publicly. RCS feature. Tier-1 collector posts unprompted.</p></div>
+  </div>
+
+  <p class="prose" style="margin-top:18px"><b>Read this honestly.</b> Curves are based on comparable launches: HeyMint (0→20k in 7mo organic), several 2024-25 curated NFT projects (0→3-5k pre-mint without paid ads), and the well-known pattern that organic accounts gain 60-70% of pre-mint followers in the final 7 days. <span class="hl">Shape is reliable. Magnitude depends on the founding roster landing.</span> Without it, expect floor.</p>
+
+  <h2 class="h">Catalyst impact</h2>
+  <div class="grid" style="grid-template-columns:60px 1fr 90px;gap:1px">
+    <div class="cell" style="background:var(--bg-2);font-size:9px;letter-spacing:.14em;color:var(--ink-3);padding:8px 10px">DAY</div>
+    <div class="cell" style="background:var(--bg-2);font-size:9px;letter-spacing:.14em;color:var(--ink-3);padding:8px 10px">EVENT</div>
+    <div class="cell" style="background:var(--bg-2);font-size:9px;letter-spacing:.14em;color:var(--ink-3);padding:8px 10px;text-align:right">LIFT</div>
+
+    <div class="cell" style="padding:8px 10px;font-weight:600">D7</div><div class="cell" style="padding:8px 10px"><b>T-03</b> the why-now wedge</div><div class="cell" style="padding:8px 10px;text-align:right;color:var(--ink-3)">+50–100</div>
+    <div class="cell" style="padding:8px 10px;font-weight:600">D12</div><div class="cell" style="padding:8px 10px"><b>Manifesto public</b> highest-leverage moment of weeks 1-2</div><div class="cell" style="padding:8px 10px;text-align:right;color:var(--accent);font-weight:600">+400–700</div>
+    <div class="cell" style="padding:8px 10px;font-weight:600">D15</div><div class="cell" style="padding:8px 10px"><b>Founding artist reveal</b> coordinated tweets compound</div><div class="cell" style="padding:8px 10px;text-align:right;color:var(--accent);font-weight:600">+800–1500</div>
+    <div class="cell" style="padding:8px 10px;font-weight:600">D16-18</div><div class="cell" style="padding:8px 10px">First press placement</div><div class="cell" style="padding:8px 10px;text-align:right;color:var(--ink-3)">+200–600</div>
+    <div class="cell" style="padding:8px 10px;font-weight:600">D19</div><div class="cell" style="padding:8px 10px">Twitter Space</div><div class="cell" style="padding:8px 10px;text-align:right;color:var(--ink-3)">+150–400</div>
+    <div class="cell" style="padding:8px 10px;font-weight:600">D26</div><div class="cell" style="padding:8px 10px">"Tomorrow."</div><div class="cell" style="padding:8px 10px;text-align:right;color:var(--ink-3)">+100–300</div>
+    <div class="cell" style="padding:8px 10px;font-weight:600">D27</div><div class="cell" style="padding:8px 10px"><b>Mint live</b></div><div class="cell" style="padding:8px 10px;text-align:right;color:var(--accent);font-weight:600">+600–1500</div>
+    <div class="cell" style="padding:8px 10px;font-weight:600">D28-30</div><div class="cell" style="padding:8px 10px">Post-mint momentum</div><div class="cell" style="padding:8px 10px;text-align:right;color:var(--ink-3)">+300–800</div>
+  </div>
+
+  <p class="prose" style="margin-top:18px"><b>What we will NOT track as a vanity metric.</b> Likes. Impressions. Reach. <span class="hl">What matters:</span> who replies, who quote-tweets, how many of the 46 named targets engage at least once, and what the auction price clears at. A 4k account where VVD and Aversano follow you outperforms a 40k account where neither knows your name.</p>
+</section>
+
+<!-- ═════ 04 TARGETS ═════ -->
+<section class="section" id="artists">
+  <div class="h-eyebrow"><span>04 / Targets</span><span class="meta"><span id="targetsConfirmed">0</span> confirmed of <span id="targetsTotal">46</span></span></div>
+  <h1 class="h">Outreach.</h1>
+  <p class="lede">Click any row to expand bespoke DM copy &amp; tap the pipeline pill to advance: <em>not started → DM sent → replied → confirmed</em>. State saves locally.</p>
+
+  <div class="seg" id="targetSeg">
+    <button class="on" data-tab="art">ARTISTS · <span id="cArt">24</span></button>
+    <button data-tab="col">COLLECTORS · <span id="cCol">22</span></button>
+  </div>
+
+  <div class="searchbar">
+    <input type="text" id="targetSearch" placeholder="Search 46 targets...">
+    <button class="filt" id="filterTier" data-tier="all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>ALL TIERS</button>
+    <button class="filt" id="filterStatus" data-status="all">ALL STATUS</button>
+  </div>
+
+  <!-- ARTIST PANEL -->
+  <div class="panel on" data-panel="art">
+    <div class="list" id="listArt"></div>
+  </div>
+
+  <!-- COLLECTOR PANEL -->
+  <div class="panel" data-panel="col">
+    <div class="list" id="listCol"></div>
+  </div>
+
+  <p class="lede" style="margin-top:14px"><b>Cardinal rule.</b> Tier-1 collector DMs do not go out until at least <em>two</em> Tier-1 artists have said yes. Without artist signal, collector DMs land cold and burn the ask.</p>
+</section>
+
+<!-- ═════ 05 PRESS ═════ -->
+<section class="section" id="press">
+  <div class="h-eyebrow"><span>06 / Press &amp; editors</span><span class="meta">11 outlets</span></div>
+  <h1 class="h">Press targets.</h1>
+  <p class="lede"><b>Order matters.</b> Right Click Save first (highest fit). NFT Now second (broadest serious audience). Decrypt third (mainstream reach). Podcasts last — they want the founder voice <em>after</em> there's a story.</p>
+
+  <div class="searchbar"><input id="pressSearch" type="text" placeholder="Search 11 outlets..."><button class="filt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>ALL</button></div>
+
+  <div class="list" id="listPress"></div>
+</section>
+
+<!-- ═════ 07 TWITTER COPY ═════ -->
+<section class="section" id="twitter">
+  <div class="h-eyebrow"><span>07 / Twitter copy</span><span class="meta">14 tweets</span></div>
+  <h1 class="h">Tweet library.</h1>
+  <p class="lede">Voice: terminal, anti-decoration, no emojis, no "alpha", no "🙏". Tap COPY.</p>
+
+  <div id="tweetsContainer"></div>
+</section>
+
+<!-- ═════ 08 EMAILS ═════ -->
+<section class="section" id="emails">
+  <div class="h-eyebrow"><span>08 / Press emails</span><span class="meta">5 templates</span></div>
+  <h1 class="h">Email pitches.</h1>
+  <p class="lede">Outlet-specific. Lead with the mechanic. No "exclusive opportunity" language.</p>
+
+  <div id="emailsContainer"></div>
+</section>
+
+<!-- ═════ 09 HEATMAP ═════ -->
+<section class="section" id="heatmap">
+  <div class="h-eyebrow"><span>09 / Send-time heatmap</span><span class="meta">UTC · all archetypes</span></div>
+  <h1 class="h">When to send.</h1>
+  <p class="lede">Times in UTC. Cross-reference target's timezone in §04.</p>
+
+  <div class="seg" id="heatSeg">
+    <button class="on" data-h="us">US</button>
+    <button data-h="eu">EU</button>
+    <button data-h="asia">ASIA</button>
+    <button data-h="press">PRESS</button>
+  </div>
+
+  <div class="heat" id="heatHost"></div>
+  <p class="lede" id="heatNote"></p>
+</section>
+
+<!-- ═════ 10 MINT DAY ═════ -->
+<section class="section" id="mintday">
+  <div class="h-eyebrow"><span>10 / Mint day playbook</span><span class="meta">D27 Saturday</span></div>
+  <h1 class="h">Hour by hour.</h1>
+  <p class="lede">All hands on deck. Auction 16:00 UTC, runs 24h, settles 16:00 D28.</p>
+
+  <div class="grid" style="grid-template-columns:80px 1fr 70px;gap:1px;font-size:11.5px">
+    <div class="cell" style="background:var(--bg-2);padding:8px 10px;font-size:9px;letter-spacing:.14em;color:var(--ink-3)">UTC</div>
+    <div class="cell" style="background:var(--bg-2);padding:8px 10px;font-size:9px;letter-spacing:.14em;color:var(--ink-3)">ACTION</div>
+    <div class="cell" style="background:var(--bg-2);padding:8px 10px;font-size:9px;letter-spacing:.14em;color:var(--ink-3)">WHO</div>
+
+    <div class="cell" style="padding:9px 10px;font-weight:600">08:00</div><div class="cell" style="padding:9px 10px">Final contract verification. Mainnet status. RPC fallback ready.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">eng</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">10:00</div><div class="cell" style="padding:9px 10px">Site banner: "Auction one. Live in 6 hours."</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">eng</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">12:00</div><div class="cell" style="padding:9px 10px">Quiet pre-tweet from founder personal acct. One line.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">founder</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">14:00</div><div class="cell" style="padding:9px 10px">"T-2 hours" tweet. Embeds first punk image.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">team</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">15:00</div><div class="cell" style="padding:9px 10px">"T-1 hour" tweet. Direct link.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">team</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">15:30</div><div class="cell" style="padding:9px 10px">Founding artists "you're up" DM. Each tweets within 30 min.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">team</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">15:55</div><div class="cell" style="padding:9px 10px">Final pre-flight. Founder on call with eng.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">all</div>
+    <div class="cell" style="padding:9px 10px;font-weight:700;background:var(--accent-soft)">16:00</div><div class="cell" style="padding:9px 10px;background:var(--accent-soft);font-weight:600">T-10 ships. AUCTION ONE LIVE.</div><div class="cell" style="padding:9px 10px;background:var(--accent-soft);color:var(--accent);font-weight:600">team</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">16:15</div><div class="cell" style="padding:9px 10px">Quote-RT each founding artist's announcement as it lands.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">team</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">16:30</div><div class="cell" style="padding:9px 10px">First bid update. ENS or shortened address. No commentary.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">team</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">17:00–22:00</div><div class="cell" style="padding:9px 10px">Bid update every 30-60 min. Engage substantively.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">team</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">22:00</div><div class="cell" style="padding:9px 10px">"Six hours in" recap. Quote a thoughtful reply.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">founder</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">D28 02:00</div><div class="cell" style="padding:9px 10px">Asia overnight check-in.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">on-call</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">D28 14:00</div><div class="cell" style="padding:9px 10px">"2 hours" tweet.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">team</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">D28 15:00</div><div class="cell" style="padding:9px 10px">T-11 ships ("One hour to settlement.")</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">team</div>
+    <div class="cell" style="padding:9px 10px;font-weight:700;background:var(--accent-soft)">D28 16:00</div><div class="cell" style="padding:9px 10px;background:var(--accent-soft);font-weight:600">SETTLEMENT. Auction two opens automatically.</div><div class="cell" style="padding:9px 10px;background:var(--accent-soft);color:var(--accent);font-weight:600">contract</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">D28 16:05</div><div class="cell" style="padding:9px 10px">T-12. Welcome the first holder. Show their punk.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">team</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">D28 17:00</div><div class="cell" style="padding:9px 10px">Recap thread. Numbers, quotes, what we learned.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">founder</div>
+    <div class="cell" style="padding:9px 10px;font-weight:600">D28 20:00</div><div class="cell" style="padding:9px 10px">DM first holder. Onboard through CURAT'D listing on camera.</div><div class="cell" style="padding:9px 10px;color:var(--ink-3)">founder</div>
+  </div>
+
+  <p class="prose" style="margin-top:18px"><b>What you'll be tempted to do, and shouldn't.</b> Don't tweet "almost there." Don't post emojis. Don't shill. Don't quote-tweet hype accounts that find the auction. Don't apologize if the price is lower than hoped. <span class="hl">The auction is the content.</span> Your job is to be the steady voice next to it, not the carnival barker on top of it.</p>
+</section>
+
+<!-- ═════ 11 TRACKER ═════ -->
+<section class="section" id="tracker">
+  <div class="h-eyebrow"><span>11 / Daily tracker</span><span class="meta"><span id="taskDoneN">0</span> / 27 done</span></div>
+  <h1 class="h">Checklist.</h1>
+  <p class="lede">Saved locally. Tap a row to toggle.</p>
+
+  <div id="tkContainer"></div>
+</section>
+
+<!-- ═════ 12 RISKS ═════ -->
+<section class="section" id="risks">
+  <div class="h-eyebrow"><span>12 / Risks &amp; failure modes</span><span class="meta">pre-mortem</span></div>
+  <h1 class="h">What can go wrong.</h1>
+  <p class="lede">Read once at start. Reread at D14.</p>
+
+  <div style="margin-top:14px">
+    <div class="risk"><div><h4>Founding roster slips below 8</h4><p>Reduce reveal scope. Frame as "founding artists, week 1 cohort, more on the way." Don't pretend the number is bigger than it is.</p></div><span class="pb m">MED</span></div>
+    <div class="risk"><div><h4>Cypherpunk-name tension goes public</h4><p>The Punk9059 / 6529 pre-emptive DM is your insurance. If it still escalates: respond once, in public, with the manifesto's name-distinction passage. Do not engage repeatedly.</p></div><span class="pb h">HIGH</span></div>
+    <div class="risk"><div><h4>No press placement lands</h4><p>Lean harder on founding-artist amplification at D15. The artists ARE the story; press is bonus. Don't beg.</p></div><span class="pb m">MED</span></div>
+    <div class="risk"><div><h4>Auction one clears under expectation</h4><p>Don't apologize. Don't comment on price. Welcome the holder, talk about what they unlocked. <span class="hl">Auction two starts in the same minute</span> — direct attention forward.</p></div><span class="pb m">MED</span></div>
+    <div class="risk"><div><h4>Auction one fails to attract any bid</h4><p>Reserve price logic should prevent this. If it happens: be honest, post the bid history, ship auction two on schedule. The 22-year clock buys you forgiveness for one bad day.</p></div><span class="pb l">LOW</span></div>
+    <div class="risk"><div><h4>Smart contract bug surfaces</h4><p>Pause. Communicate immediately. Audit fix in public. Postpone, don't paper over. Trust is the actual product.</p></div><span class="pb l">LOW</span></div>
+    <div class="risk"><div><h4>Founding artist publicly distances after reveal</h4><p>Honor it. Acknowledge once, briefly, without spin. Remove from roster on-contract. <span class="hl">A graceful departure is content</span> if handled right.</p></div><span class="pb m">MED</span></div>
+    <div class="risk"><div><h4>Twitter Space goes badly</h4><p>Acceptable if any one moment is quotable. Plan three quotable lines in advance. The Space's job is to produce a clip, not a vibe.</p></div><span class="pb m">MED</span></div>
+    <div class="risk"><div><h4>ETH market drawdown during launch week</h4><p>The 22-year cadence is your shield. "Auction one happens regardless of market conditions, and so do auctions 2 through 8,000."</p></div><span class="pb m">MED</span></div>
+    <div class="risk"><div><h4>Founder fatigue / burnout in week 4</h4><p>Predictable. Pre-write D26-30 tweets in week 2. Eat. Sleep. The auction runs whether or not you're optimizing.</p></div><span class="pb h">HIGH</span></div>
+    <div class="risk"><div><h4>One of the bespoke DMs leaks publicly</h4><p>Each is written to be readable in public. If leaked, no scandal — they're respectful and substantive by design.</p></div><span class="pb l">LOW</span></div>
+  </div>
+
+  <hr>
+  <h2 class="h">Two beliefs to hold</h2>
+  <div class="prose">
+    <p><b>One.</b> The 30 days are not the project. The project is 22 years. If day one is a 6 out of 10, that is fine. <span class="hl">Don't trade the 22 years for the 30 days.</span></p>
+    <p><b>Two.</b> Every shortcut you'll be tempted to take — paid amps, allowlist hacks, Discord drama, KOL deals — is a tax you pay against the manifesto. The manifesto is the most valuable asset of this entire launch. Defend it harder than you defend the price.</p>
+  </div>
+
+  <hr>
+  <p class="lede"><em>Final note for the version of you reading this on D26 at 23:00 UTC.</em> Whatever happened, you did the work. The contract will run. Auction two is already queued. Go to bed. Tomorrow is just one of 8,030 days.</p>
+</section>
+
+</main>
+</div>
+
+<!-- ═══════════════════════ DATA + LOGIC ═══════════════════════ -->
+<script>
+'use strict';
+
+const STATE_LABELS = ['NOT STARTED','DM SENT','REPLIED','CONFIRMED'];
+const TWEET_LABELS = ['NOT SHIPPED','DRAFTED','SHIPPED'];
+const EMAIL_LABELS = ['NOT SENT','DRAFTED','SENT','REPLIED'];
+const STORE_KEY = 'cypherpunks-gtm-v3';
+
+// ─── DATA ─────────────────────────────────────────────────
+const ARTISTS = [
+  {h:'@XCOPYART',n:'XCOPY',t:1,k:'Glitch / dystopian crypto art OG',w:'Defines the aesthetic adjacent to ours.',send:'Tue/Wed 19:00–21:00 UTC. 7 days substantive replies on his posts FIRST. Reference no specific piece — he\'ll see through it.',av:'XC',c:1,
+   dm:`XCOPY —
+
+Not a pitch. Just want this in your inbox before it's in your timeline.
+
+Building CypherPunks. 10k pixel art on Ethereum, daily auction for 22 years. The mechanic: holding gates listing rights on a curation stack we've been quietly building. Sell the punk, the contract removes you from the curated roster. Auto. No appeal.
+
+Reason I'm writing to you specifically is the manifesto. We're trying to build something where the platform can't quietly edit the roster, can't deplatform an artist, can't grant standing and revoke it. Primitives all the way down.
+
+If any of that lands for you, the manifesto is here: cypherpunks.art/manifesto. If it doesn't, no follow-up.
+
+— [NAME]`},
+  {h:'@coldie',n:'Coldie',t:1,k:'Pioneering 3D, SuperRare OG',w:'Unimpeachable credibility. Won\'t engage with hype.',send:'Tue 18:00 UTC. Email better than DM if findable. Lead with respect for lineage.',av:'CO',c:2,
+   dm:`Coldie —
+
+Your Decentral Eyes work was one of the early reasons I took this medium seriously, so I'm writing this carefully.
+
+Building CypherPunks: 10k pixel art on Ethereum, one auctioned per day for ~22 years. The unusual mechanic — holding the punk is the credential to be on the curated roster across our editorial stack (CURAT'D feed live, HASH'D editorial live). Sell, and the contract automatically removes you. Skin in the game enforced as a primitive.
+
+I'd like you on the founding roster. The allocation comes with no obligations beyond having your name there. Submission to the platform is and always will be free — that's in the manifesto for a reason.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@hackatao',n:'Hackatao',t:1,k:'Italian duo, prolific, deeply respected',w:'Bridge to European collectors. Active and warm.',send:'Wed 16:00 UTC (afternoon CET). Italian translation offer is competitive edge.',av:'HA',c:3,
+   dm:`Hackatao —
+
+I've been following your work for a long time and the way you've held a coherent visual world across so many series and platforms is rare. It also makes you the right kind of artist for what I'm building.
+
+CypherPunks: 10k pixel art on Ethereum, one auctioned per day for the next 22 years. Holding a punk is the credential to be on our curated roster (CURAT'D is live now). Sell, and the contract removes you automatically. No quiet edits. No platform politics.
+
+I'd like you to be a founding artist. The allocation comes with no obligations — no exclusivity, no marketing requirement, just your name on the founding roster.
+
+Manifesto: cypherpunks.art/manifesto. Happy to translate to Italian if useful.
+
+— [NAME]`},
+  {h:'@dmitricherniak',n:'Dmitri Cherniak',t:1,k:'Ringers, Art Blocks royalty',w:'A retweet from him is enormous.',send:'LOW PRIORITY. Send only after 1+ substantive reply from him in prior 14 days. If not, do NOT send.',av:'DC',c:4,
+   dm:`Dmitri —
+
+Not going to ask anything of you in this message.
+
+Building CypherPunks (cypherpunks.art) — daily auction NFT collection with on-contract auto-removal of holders from a curated roster. The architecture conversation is the part I think you might enjoy: the contract enforces curatorial standing, not policy. We borrowed the daily auction shape from Nouns and acknowledge it openly; the departure is the curation primitive.
+
+Just wanted you to have it on your radar. Not a founding artist pitch — Ringers is its own universe and I'm not pretending we're in the same conversation.
+
+If the architecture interests you, I'd love a sharp critique: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@JustinAversano',n:'Justin Aversano',t:1,k:'Twin Flames, Quantum Art founder',w:'Operator. Will get it in two paragraphs.',send:'Mon 17:00 UTC. He responds to operators. Skip artist-pitch language.',av:'JA',c:5,
+   dm:`Justin —
+
+You're one of a handful of people in this space who've actually built curatorial infrastructure rather than talking about it, and that's why I'm writing.
+
+CypherPunks: 10k pixel art keys on Ethereum, daily auction for ~22 years. The pitch in one mechanic — the smart contract auto-removes a holder from the curated roster on transfer. Curatorial standing as a primitive, not a permission. CURAT'D (live), HASH'D (live), LIMIT'D (soon) all gate access through the punk.
+
+I'd like you as a founding artist. Allocation, day-one CURAT'D listing, HASH'D feature on your terms, voting rights on subsequent admissions. Zero obligations.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@gremplin',n:'Gremplin',t:1,k:'CrypToadz creator, Nouns artist',w:'Pixel art lineage, anti-grift voice.',send:'Tue 17:00 UTC. The "tell me if wrong" line is real — he\'ll respect being asked.',av:'GR',c:6,
+   dm:`Gremplin —
+
+CrypToadz being CC0 was one of those decisions that taught a lot of us in this space what "primitives" actually meant. So this is for you specifically.
+
+CypherPunks: 10k pixel art on Ethereum, one auctioned per day for ~22 years. The shape borrows from Nouns (acknowledged openly). The departure: holding a punk gates curatorial listing on our editorial stack, and the contract auto-removes you when you sell. Curation as a primitive.
+
+I'd like you on the founding roster. No exclusivity, no obligations.
+
+Manifesto: cypherpunks.art/manifesto. If anything in there is wrong, please tell me before we go public.
+
+— [NAME]`},
+  {h:'@clairesilver12',n:'Claire Silver',t:1,k:'AI art collector + artist',w:'Speaks across worlds. Endorsement carries unusual weight.',send:'Wed 19:00 UTC. The "read first, founding artist second" inversion will be noticed.',av:'CS',c:7,
+   dm:`Claire —
+
+I read your essays carefully and I'm writing this one carefully too.
+
+Building CypherPunks. The short shape: 10k pixel art on Ethereum, one auctioned per day for 22 years, identity-as-credential mechanic. Holding a punk is what makes you a curated participant on our editorial stack. Selling auto-removes you, on-contract. The manifesto frames this as primitives over permissions — a response to platforms granting and silently revoking standing.
+
+The reason I'm writing to you in particular is that you sit at one of the few intersections in this scene where AI, traditional, and crypto art readers all listen, and your read on the manifesto would be more useful to me than almost anyone else's. If you have 10 minutes, it's here: cypherpunks.art/manifesto
+
+I'd also like you on the founding artist roster — but the read is the part I'm asking for first.
+
+— [NAME]`},
+  {h:'@deekaymotion',n:'DeeKay',t:1,k:'Animator, "Life and Death"',w:'Cozomo bought his work for $1M. Cultural marker.',send:'Tue 18:00 UTC. Pick one piece, stop there. Don\'t list three.',av:'DK',c:8,
+   dm:`DeeKay —
+
+"Life and Death" is one of the few pieces from this medium that I've returned to without a market reason to. So I'm writing this without the usual pitch language.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for 22 years. Holding the punk gates a curation stack we've been building (CURAT'D feed live, HASH'D editorial live). Selling auto-removes you from the curated roster on-contract — skin in the game as a primitive, not a marketing line.
+
+I'd like you on the founding artist roster. Allocation, day-one listing, no obligations beyond your name being there.
+
+Manifesto if you want the full read: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@slimesunday',n:'Slimesunday',t:2,k:'Collage, mainstream crossover',w:'Widens reach beyond crypto-native.',send:'Tue 17:00 UTC. Keep tight — high pitch volume.',av:'SL',c:1,
+   dm:`Mike —
+
+Quick one. Your collage practice has done more to bring outside-of-crypto eyes onto digital art than almost anyone, which is the angle I'm writing about.
+
+CypherPunks: 10k pixel art keys on Ethereum, one auctioned per day for the next ~22 years. Holding a punk is the credential to be on our curated roster (CURAT'D live, HASH'D live). Sell, and the contract removes you. No allowlist, no presale, no team discount.
+
+Founding artist invitation. No obligations.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@MaxOsiris',n:'Max Osiris',t:2,k:'Long-tenured artist, scene voice',w:'Talks scene politics openly.',send:'Wed 18:00 UTC. He\'ll have sharp questions. Have plain answers ready.',av:'MO',c:2,
+   dm:`Max —
+
+Writing to you because you've been honest about what's broken in this scene, and that's the thing the project is actually trying to address.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for 22 years. The bit you'll either hate or like: holding the punk gates curatorial listing across our editorial stack, and the contract auto-removes you when you sell. We built it because every platform that promised sovereignty ended up with a moderation queue.
+
+I'd value your honest read on the manifesto before we go public. If it doesn't hold up, I'd rather know now: cypherpunks.art/manifesto
+
+If it does hold up, I'd like you on the founding artist roster.
+
+— [NAME]`},
+  {h:'@osinachi_art',n:'Osinachi',t:2,k:'Major Nigerian crypto artist',w:'African scene representation underweighted.',send:'Tue 14:00 UTC (afternoon WAT). The "not the same five wallets" line is the hook.',av:'OS',c:3,
+   dm:`Osinachi —
+
+Your work has carried a region of this scene almost on its own and we're trying to build something that doesn't repeat the mistake of roster-building from the same five wallets.
+
+CypherPunks: 10k pixel art on Ethereum, one auctioned per day for ~22 years. Holding a punk gates listing across CURAT'D (live), HASH'D (live), LIMIT'D (soon). The contract auto-removes you on transfer. Curatorial standing as primitive.
+
+I'd like you on the founding artist roster. Allocation, day-one CURAT'D listing, HASH'D feature on your terms, no obligations.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@frenetikvoid',n:'Frenetik Void',t:2,k:'Pixel art, demoscene roots',w:'Pixel lineage credibility.',send:'Wed 18:00 UTC. Send actual punk as attachment so he can judge work, not pitch.',av:'FV',c:4,
+   dm:`Frenetik —
+
+Pixel art is the medium of this collection so I'm writing to artists who actually know what that means, and you're high on that list.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for 22 years. Holding the punk gates listing on our editorial stack (CURAT'D live, HASH'D live). Sell, the contract removes you. No presale, no allowlist.
+
+Founding artist invitation. Allocation, day-one listing, no obligations.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@reuben_wu',n:'Reuben Wu',t:2,k:'Photographer, Lux Noctis',w:'Photography legitimizes platform.',send:'Wed 16:00 UTC. Email if findable. Long-form welcome.',av:'RW',c:5,
+   dm:`Reuben —
+
+Lux Noctis sits in a particular collector audience — people who buy 1/1s on SuperRare and watch what other serious collectors hold — and that audience is exactly the one we want this to land with.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates listing across our editorial and curation stack. Sell, and the contract auto-removes you. Curation as a primitive.
+
+I'd like you on the founding artist roster. Photography on CURAT'D widens what the platform represents.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@matterly',n:'Matterly',t:2,k:'Generative artist, low ego, high taste',w:'Quiet voice, respected by other artists.',send:'Tue 19:00 UTC. He replies thoughtfully or not at all. Both fine.',av:'MA',c:6,
+   dm:`Matterly —
+
+Quick note. The way other artists talk about your work is the reason I'm writing — taste signals upstream, and your name on something tends to bring careful collectors with it.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for 22 years. Holding gates curated listing on CURAT'D and HASH'D; selling auto-removes you on-contract.
+
+Founding artist invitation. No obligations.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@trevorjonesart',n:'Trevor Jones',t:2,k:'Painter-turned-NFT, big collector base',w:'Bridges traditional collectors. UK-based.',send:'Tue 16:00 UTC (afternoon UK).',av:'TJ',c:7,
+   dm:`Trevor —
+
+Your collector base sits across traditional and digital, which is rare and which is exactly the bridge we need this project to walk.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates listing across our curation/editorial stack; the contract auto-removes you on transfer.
+
+Founding artist invitation. Allocation, day-one listing, no exclusivity, no marketing requirement.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@ix_shells',n:'ix shells',t:2,k:'Generative animation, deep aesthetic taste',w:'Brings a different audience.',send:'Wed 18:00 UTC.',av:'IX',c:8,
+   dm:`ix —
+
+Your sense for motion and atmosphere makes you the kind of artist whose name on a roster changes how the roster reads, so I'm writing this carefully.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for 22 years. Holding gates listing across CURAT'D (live) and HASH'D (live). Sell, contract removes you. No allowlist, no presale.
+
+Founding artist invitation. No obligations.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@DesLucrece',n:'Des Lucrece',t:2,k:'Photographer, careful collector base',w:'Quiet network, deep respect.',send:'Tue 20:00 UTC.',av:'DL',c:1,
+   dm:`Des —
+
+Writing because the collectors who follow you are exactly the ones we want to reach, and because your work would expand what CURAT'D represents.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates curated listing across our editorial stack. Selling auto-removes on-contract.
+
+Founding artist invitation. Allocation, day-one CURAT'D listing, HASH'D feature on your terms.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@ThankYouX',n:'ThankYouX',t:3,k:'Painter, NFT crossover',w:'Wider, less crypto-pure audience.',send:'Wave 2 only — week 3+. Short and direct.',av:'TX',c:2,
+   dm:`Hi —
+
+CypherPunks. 10k pixel art on Ethereum, daily auction for 22 years. Holding gates listing across our curation stack; selling auto-removes you on-contract.
+
+If your audience would be served by being early to a project that's about platform sovereignty, I'd value having you on the founding roster. No obligations.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@maddogjones',n:'Mad Dog Jones',t:3,k:'Cyberpunk aesthetics, blue chip',w:'Aesthetic match. One polite attempt.',send:'Single send. No follow-up. Hard to reach.',av:'MD',c:3,
+   dm:`Michah —
+
+Brief. The cyberpunk aesthetic of your practice and the project's premise have a shared room — that's the only reason I'm writing.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for 22 years. Holding a punk gates listing across our curation/editorial stack; the contract auto-removes you on transfer.
+
+Founding artist invitation. Allocation, no obligations.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@VanArman',n:'Pindar Van Arman',t:3,k:'AI/generative pioneer',w:'Adds AI-art lane.',send:'Wave 2. Send when AI-art angle needed for roster diversity.',av:'VA',c:4,
+   dm:`Pindar —
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for 22 years. Holding gates curated listing on CURAT'D and HASH'D; selling auto-removes you on-contract. Curation as a primitive.
+
+Founding artist invitation. The reason I'm writing to you specifically is the AI-art lane needs to be represented on the founding roster, not as an afterthought.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@robness',n:'Robness',t:3,k:'Glitch art, spicy voice, scene memory',w:'Will say something memorable.',send:'Wave 2. The "tell me directly" framing is the right move.',av:'RO',c:5,
+   dm:`Robness —
+
+I expect you'll have an opinion about this project and I'd rather hear it directly than read it as a quote-tweet later.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for 22 years. Identity-as-credential — holding gates listing across our editorial stack, selling auto-removes you on-contract. The name is a deliberate nod, not a hijack — we're not claiming the cypherpunk lineage of Bitcoin, we're claiming the spirit applied to art curation.
+
+If that distinction is too thin for you, tell me. If it holds up, founding artist roster invitation stands.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@ezra_miller',n:'Ezra Miller',t:3,k:'Generative coder, Art Blocks',w:'Adjacent technical credibility.',send:'Wave 2. Lead with mechanic, not art — he\'s a technical thinker first.',av:'EM',c:6,
+   dm:`Ezra —
+
+Brief. The auto-removal-on-transfer mechanic in our contract is the kind of thing I think you'll find interesting from first principles — curatorial standing enforced at the contract layer, not by policy.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for 22 years. Founding artist roster invitation. Allocation, no obligations.
+
+Manifesto + architecture: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@fvckrender',n:'fvckrender',t:3,k:'3D, mainstream collector reach',w:'Outside core bubble.',send:'Wave 2.',av:'FR',c:7,
+   dm:`Fred —
+
+Quick one. Your audience reaches outside the core crypto-art bubble in a way most artists' don't, which is the angle.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for 22 years. Holding gates listing across CURAT'D (live) and HASH'D (live); selling auto-removes you on-contract. Founding artist invitation, no obligations.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@blakekathryn',n:'Blake Kathryn',t:3,k:'3D / surrealism, brand crossover',w:'Brings fashion/music adjacency.',send:'Wave 2.',av:'BK',c:8,
+   dm:`Blake —
+
+Your work crosses into fashion/music spaces in a way that brings audiences digital art rarely reaches, and that's the angle.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for 22 years. Holding gates listing across our editorial stack; the contract auto-removes you on transfer. Founding artist invitation, no obligations.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`}
+];
+
+const COLLECTORS = [
+  {h:'@CozomoMedici',n:'Cozomo de\' Medici',t:1,k:'Pseudonymous mega-collector, taste-maker',w:'Single highest-leverage endorsement in the space.',send:'DO NOT SEND COLD. Send only after a T1 artist has said yes and offered the warm intro. Wed 19:00 UTC.',av:'CM',c:1,
+   dm:`Cozomo —
+
+[FOUNDING ARTIST NAME] suggested I write to you directly.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. The mechanic worth your minute — holding gates curatorial listing across our editorial stack, and the contract auto-removes a holder when they transfer their last punk out. Curatorial standing enforced at the contract layer, not by policy. No presale, no allowlist, no team discount.
+
+I'm not asking you to bid on day one. I'd value your read on the manifesto before we go public: cypherpunks.art/manifesto
+
+If the architecture interests you, the technical doc is here: [link]
+
+— [NAME]`},
+  {h:'@Vince_Van_Dough',n:'Vincent Van Dough',t:1,k:'AOTM Gallery, ex-Starry Night Capital',w:'Operator + collector. Speaks the operator language.',send:'Tue 18:00 UTC. Long-form fine. Lead with mechanic, not mission.',av:'VVD',c:2,
+   dm:`VVD —
+
+You've operated this space from both sides — collector and gallery — so I'm writing this in operator language and skipping the artist-pitch tone.
+
+CypherPunks: 10k pixel art ERC-721 on Ethereum, one auctioned per day for ~22 years. The unusual mechanic: holding the punk gates curatorial listing across our editorial stack (CURAT'D feed live, HASH'D editorial live). On transfer of the last punk out of a registered wallet, the smart contract auto-removes the holder from the curated roster. Reacquire and holders vote to reinstate. Skin in the game enforced as a primitive, not a marketing claim.
+
+No presale. No allowlist. No team discount. Day-one allocation only to artists/collectors whose practice already speaks for them, and to the team. Every other punk bought at fair market on the day of its auction.
+
+I'd value your read on the manifesto before we go public: cypherpunks.art/manifesto. The architecture doc is also available if the technical layer interests you.
+
+— [NAME]`},
+  {h:'@punk9059',n:'punk9059',t:1,k:'CryptoPunk maximalist, scene memory',w:'The name decision will be his strongest validator or sharpest critic.',send:'PRE-EMPTIVE. Mon 18:00 UTC. Single highest-leverage send in entire campaign — get it right.',av:'90',c:3,
+   dm:`9059 —
+
+Writing to you before you see this in your timeline because I'd rather your reaction land in DMs than as a quote-tweet.
+
+I'm building CypherPunks. 10k pixel art on Ethereum, daily auction for ~22 years, identity-as-credential mechanic: holding the punk gates curatorial listing across our editorial stack, and the contract auto-removes you on transfer.
+
+I know how the name reads. I'm not claiming the cypherpunk lineage of Bitcoin or pretending we're in that conversation. The reference is the spirit — primitives over permissions — applied to art curation. We are not building a privacy project; we are building a curation project that takes the cypherpunk premise about systems and standing seriously.
+
+If that distinction is too thin for you, I'd rather hear it directly. If it holds up, I'd value your honest read on the manifesto: cypherpunks.art/manifesto
+
+Either way, you'll see this publicly soon and I wanted you to have the chance to push back first.
+
+— [NAME]`},
+  {h:'@dingalingts',n:'DingALingTs',t:1,k:'Major collector, Punks deep wallet',w:'Quiet but watched.',send:'Tue 18:00 UTC. He responds to plain. Don\'t stack adjectives.',av:'DT',c:4,
+   dm:`DingALing —
+
+Brief.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates curatorial listing on our editorial stack; the contract auto-removes you on transfer. No presale, no allowlist, no team discount. Auction one is [DATE].
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@seedphor',n:'Seedphrase',t:1,k:'Major NFT whale, art-curious',w:'Buys conviction. Loud when he wants to be.',send:'Wed 20:00 UTC. The "conviction over rotation" framing is honest — that\'s what he actually values.',av:'SE',c:5,
+   dm:`Seed —
+
+I've watched what you back when you go loud about something, and the through-line is conviction over rotation, so I'm writing about a project that's built on that premise.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. The mechanic: holding gates curatorial listing across our editorial stack, and the contract auto-removes you when you sell. Skin in the game as a primitive — sell, you're out, no committee, no appeal.
+
+I'm not asking you to bid. I'd value your read on the manifesto before it's public: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@punk6529',n:'punk6529',t:1,k:'Open Metaverse thinker, scene philosopher',w:'Manifesto-driven. Will engage seriously or demolish.',send:'Wed 17:00 UTC. Email if findable. Do NOT pitch the founding allocation. The conversation is the value.',av:'65',c:6,
+   dm:`6529 —
+
+This is not a pitch and I'm not asking for an endorsement.
+
+I've spent enough time with your essays on the open metaverse, custody, and the nature of digital property to know that what we're building either holds up to your framework or doesn't, and I'd rather find out before we go public.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding the punk gates curatorial listing across our editorial stack (CURAT'D feed, HASH'D editorial). On transfer of the last punk out of a registered wallet, the smart contract auto-removes the holder from the curated roster. Reacquire and holders vote to reinstate. The thesis: curation as a primitive, not a permission granted by a platform.
+
+I'd value your read on the manifesto, knowing you'll be honest if it doesn't hold up: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@DCinvestor',n:'DCinvestor',t:1,k:'Crypto investor + art collector',w:'Reaches an audience that respects his framings.',send:'Tue 19:00 UTC. He likes brief and substantive.',av:'DC',c:7,
+   dm:`DC —
+
+Brief. You think publicly about how digital ownership and platform sovereignty intersect, which is the lens this project asks for.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. The mechanic: holding the punk gates curatorial listing on our editorial stack, and the contract auto-removes you on transfer. Sovereignty enforced as a primitive, not a policy.
+
+I'd value your read on the manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@digitalartchick',n:'digitalartchick',t:1,k:'~180k followers, tireless curator-voice',w:'Single most active discovery account on X.',send:'Wed 18:00 UTC. The "not asking for promo" line is the differentiator.',av:'DA',c:8,
+   dm:`DAC —
+
+I'm not asking for a feature, a quote-tweet, or a Space slot. I want your honest read on something, because your taste is one of the most-cited discovery filters in this scene and your eyebrow-raise on a project tends to be the right one.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates curatorial listing on our editorial stack; the contract auto-removes you on transfer. No presale, no allowlist, no team discount. Submission to CURAT'D is and always will be free.
+
+If you have 5 minutes for the manifesto, it's here: cypherpunks.art/manifesto. If it doesn't hold up for you, I'd genuinely rather know now.
+
+— [NAME]`},
+  {h:'@ColeThereum',n:'Cole',t:2,k:'Pudgy Penguins co-founder',w:'Adjacent network, cross-pollinator.',send:'Tue 17:00 UTC.',av:'CT',c:1,
+   dm:`Cole —
+
+Quick one. The thing you've built with Pudgy is the rare counterexample to the "PFP is dead" narrative, and the principle underneath — slow brand-building, hold conviction long — overlaps with what we're trying to do.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates curatorial listing on our editorial stack; selling auto-removes you on-contract.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@adamamcbride',n:'Adam McBride',t:2,k:'Historic NFT archaeologist',w:'Natural fit for fair-launch framing.',send:'Wed 17:00 UTC. Lead with early-ethos angle.',av:'AM',c:2,
+   dm:`Adam —
+
+You've documented this space's history in a way that makes you one of the few people who actually remembers what fair launches felt like — so I'm writing about a project that's deliberately built on that premise.
+
+CypherPunks: 10k pixel art on Ethereum, one auctioned per day for ~22 years. No presale, no allowlist, no team discount. Initial allocation goes to artists and collectors whose practice/conviction already speaks for them; every other punk is bought at fair market on the day of its auction. Holding gates curatorial listing on our editorial stack; selling auto-removes you on-contract.
+
+If the historical lens interests you, the manifesto is here: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@osf_nft',n:'OSF',t:2,k:'Crypto artist + collector, scene operator',w:'Bridges artist and collector tribes.',send:'Tue 19:00 UTC.',av:'OF',c:3,
+   dm:`OSF —
+
+You sit at one of the few intersections in this scene where artists and collectors actually listen to the same person, which is the angle.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates curatorial listing on our editorial stack; the contract auto-removes you on transfer. No presale, no allowlist, no team discount.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@anonymoux1144',n:'Anonymoux',t:2,k:'Quiet major collector',w:'Steady, reasonable voice in a noisy room.',send:'Wed 18:00 UTC.',av:'AN',c:4,
+   dm:`Anonymoux —
+
+Brief. The reason I'm writing is that your collecting voice tends to be the calm one in a loud room, and the projects you back tend to outlast the noise.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates curatorial listing on our editorial stack; selling auto-removes you on-contract. No presale, no allowlist, no team discount.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@deeze',n:'DeeZe',t:2,k:'Active collector, broad reach',w:'Will share things he respects.',send:'Tue 18:00 UTC. Tight is right.',av:'DZ',c:5,
+   dm:`DeeZe —
+
+Quick one.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates curatorial listing on our editorial stack; the contract auto-removes you when you sell. No presale, no allowlist, no team discount.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@maxorsk',n:'maxorsk',t:2,k:'Generative art collector',w:'Tightly networked with Art Blocks crowd.',send:'Wed 19:00 UTC. The Art Blocks angle matters.',av:'MX',c:6,
+   dm:`Maxorsk —
+
+Writing because the Art Blocks crowd you sit inside is the audience that will judge whether this project's curation is serious — and your read on the manifesto is the first read that matters from that side.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates curatorial listing on our editorial stack; selling auto-removes you on-contract. We borrow the daily auction shape from Nouns and acknowledge it openly; the curation primitive is the departure.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@Pranksy',n:'Pranksy',t:2,k:'Long-tenured collector, community builder',w:'Old-guard. Will assess on merits.',send:'Tue 17:00 UTC.',av:'PR',c:7,
+   dm:`Pranksy —
+
+Quick one. Old-guard read is the one I most want before this is public.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. No presale, no allowlist, no team discount. Holding gates curatorial listing on our editorial stack; selling auto-removes you on-contract.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@richerd',n:'Richerd',t:2,k:'Manifold co-founder, builder-collector',w:'Operator brain. Will see the architecture.',send:'Tue 18:00 UTC. Lead with architecture.',av:'RI',c:8,
+   dm:`Richerd —
+
+Operator-to-operator note. The architecture is the part I want you looking at.
+
+CypherPunks contract auto-removes a holder from the curated artist/collector roster on transfer of the last punk out of a registered wallet. Reacquire and holders vote to reinstate. Curatorial standing enforced at the contract layer, not by policy. Daily auction, ~22 years. CURAT'D feed and HASH'D editorial both gate write access through the punk.
+
+If the architecture has a hole, I'd rather you find it now. Tech doc: [link]. Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@Iammm_eth',n:'Michael Ugwu',t:2,k:'Nigerian collector, FreeME Digital',w:'Underweighted in most launches.',send:'Tue 14:00 UTC (afternoon WAT).',av:'MU',c:1,
+   dm:`Michael —
+
+You've collected from artists most launches don't reach, and that's the angle. We're trying to build a roster that doesn't repeat the mistake of curating from the same five wallets — and your read on whether we're actually doing that is the read I most want.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates curatorial listing on our editorial stack; the contract auto-removes you on transfer. No presale, no allowlist.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@punksOTC',n:'Punks OTC',t:2,k:'OTC desk, knows every Punks holder',w:'Distribution into original CryptoPunks community.',send:'Wed 17:00 UTC. Business-direct tone.',av:'PO',c:2,
+   dm:`Hi —
+
+Direct: CypherPunks is a 10k pixel art collection on Ethereum, daily auction for ~22 years. No presale, no allowlist, no team discount. Holding gates curatorial listing on our editorial stack; selling auto-removes you on-contract.
+
+The original Punks community is who we most want to land with. Not as marketing — the cypherpunk-name decision needs to read as respect, not appropriation, and we'd rather have that conversation directly.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@zeneca',n:'Zeneca',t:2,k:'NFT educator, large attentive audience',w:'Educational reach.',send:'Wed 18:00 UTC.',av:'ZE',c:3,
+   dm:`Zeneca —
+
+Brief. Your audience reads carefully and trusts your filter, which is why I'm writing this carefully.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates curatorial listing on our editorial stack; selling auto-removes you on-contract. No presale, no allowlist, no team discount.
+
+If the manifesto holds up for you, I'd value the read more than I'd value a quote-tweet: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@gmoneyNFT',n:'gmoney',t:3,k:'9dcc, mainstream-crypto crossover',w:'Different audience, fashion-adjacent.',send:'Wave 2.',av:'GM',c:4,
+   dm:`gmoney —
+
+Quick one. The audience you've built outside the core crypto-art bubble is the angle.
+
+CypherPunks: 10k pixel art on Ethereum, daily auction for ~22 years. Holding gates curatorial listing on our editorial stack; selling auto-removes you on-contract.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@KeyboardMonkey3',n:'Keyboard Monkey',t:3,k:'Spaces host, market commentary',w:'Spaces participation channel.',send:'Wave 2 — week 3+. Need one founding artist confirmation public first.',av:'KM',c:5,
+   dm:`KBM —
+
+Pitch: Spaces guest slot.
+
+CypherPunks launches [DATE]. The conversation is curatorial standing as a smart-contract primitive — sell, the contract removes you, no committee. Two threads I can riff on at length: (1) why we built it that way and what breaks when you don't, (2) the 22-year daily auction and slow-distribution as a culture-shaping decision.
+
+If your show fits, I'm available [TIMEFRAMES]. Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'@nftgirl',n:'Lex Marcano',t:3,k:'Sotheby\'s-featured collector, podcast',w:'Bilingual reach.',send:'Wave 2.',av:'LM',c:6,
+   dm:`Lex —
+
+Pitch for The Joy of NFTs.
+
+CypherPunks launches [DATE]. The angle for your show: identity-as-credential as a smart-contract primitive, and what it changes for both artists and collectors when curatorial standing is enforced on-chain. Spanish episode option if useful.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`}
+];
+
+const PRESS = [
+  {h:'Right Click Save',n:'Alex Estorick',t:1,k:'Most serious crypto-art editorial voice',w:'Manifesto-shaped projects are his beat.',send:'D16 09:30 UTC. Embargo offer.',av:'RC',c:1,
+   dm:`Subject: Curation as a primitive — manifesto + project under embargo
+
+Alex —
+
+I read RCS for the same reason a lot of people do: it's the one outlet that takes the manifesto-shape of crypto art seriously rather than as marketing surface. So I'm bringing this to you first.
+
+Project: CypherPunks. 10,000 pixel art keys on Ethereum, one auctioned per day for ~22 years. Holding the key is the credential to participate on a curation/editorial stack we've quietly been building (CURAT'D feed live, HASH'D editorial live, LIMIT'D drops Q3). The mechanic that makes the project worth your minute: on transfer of the last key out of a registered wallet, the smart contract auto-removes the holder from the curated roster. No appeal. Reacquire and the holders vote to reinstate.
+
+The thesis is in the manifesto: curation should be a primitive, not a permission. Every platform that has promised sovereignty has ended up with a moderation queue. We tried to fix that at the contract layer.
+
+Founding artist roster includes [N CONFIRMED NAMES]. Mint date [DATE]. Manifesto: cypherpunks.art/manifesto
+
+Embargo offer: I can give you the manifesto, the architecture doc, the founding roster, and one founder interview ahead of public reveal on D15 if you want to publish in the same window. No payment, no exclusivity beyond the embargo period. If RCS doesn't fit, I'd rather you tell me now than have me chase.
+
+— [NAME]
+[role] · [email] · [twitter]`},
+  {h:'NFT Now',n:'Matt Medved',t:1,k:'Largest serious-audience NFT outlet',w:'Founder Q&A format.',send:'D18 09:30 UTC.',av:'NN',c:2,
+   dm:`Subject: 22-year daily auction · founding roster reveal · pitch
+
+Matt —
+
+Brief pitch.
+
+CypherPunks: 10k pixel art on Ethereum, one auctioned per day for ~22 years. The unusual mechanic: holding the punk is the credential to be on our curated artist/collector roster across CURAT'D (live), HASH'D (live), LIMIT'D (Q3). The smart contract auto-removes a holder from the roster on transfer. No appeal. Reacquire and holders vote to reinstate.
+
+Three angles your readers would care about:
+
+(1) Fair-launch architecture — no presale, no allowlist, no team discount. Founding roster is the only allocation outside fair market.
+
+(2) Founding artist roster — [N CONFIRMED NAMES]. Reveal D15.
+
+(3) The 22-year cadence — slow distribution as a culture-shaping decision in a category dominated by burst mints.
+
+Available for interview, written Q&A, or just feeding you the doc. Whichever fits the format.
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'CoinDesk',n:'Danny Nelson',t:2,k:'Will cover the mechanic if framed as protocol-level',w:'Brief, technical.',send:'D17. Pitch as protocol/architecture story.',av:'CD',c:3,
+   dm:`Subject: NFT auction protocol with on-chain curation enforcement — launching [DATE]
+
+Danny —
+
+CypherPunks launches [DATE]. The hook for CoinDesk is the protocol design:
+
+— ERC-721, 10,000 keys, one auctioned per day for ~22 years
+— No presale, no allowlist, no team discount
+— Holding the key gates write access to a curation/editorial stack
+— On transfer of the last key out of a wallet, the smart contract auto-removes the holder from the curated roster
+— Reacquire and holders vote to reinstate
+
+The story is curatorial standing as a smart-contract primitive. Founding artists include [N CONFIRMED].
+
+Doc + manifesto: cypherpunks.art/manifesto. Available for a 30-min interview this week.
+
+— [NAME]`},
+  {h:'artnet News',n:'crypto art desk',t:2,k:'Crossover into traditional art press',w:'If RCS lands first.',send:'D19. After RCS publishes.',av:'AN',c:4,
+   dm:`Subject: Curation as a smart-contract primitive — story tip
+
+Hi —
+
+Tipping you on a project Right Click Save is covering [LINK if published]: CypherPunks, a 10,000-piece pixel art collection on Ethereum auctioned one per day for ~22 years. The angle for an art-press audience: the smart contract enforces curatorial standing — selling the key auto-removes you from the founding roster on a curation/editorial platform.
+
+Founding artists include [N CONFIRMED]. Mint [DATE].
+
+Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'Decrypt',n:'crypto news desk',t:2,k:'Wider crypto audience',w:'Will cover if pitched as fair-launch story.',send:'D23 10:00 UTC.',av:'DE',c:5,
+   dm:`Subject: NFT auction protocol with on-chain curation enforcement — launching [DATE]
+
+Hi —
+
+CypherPunks launches [DATE]. The hook for your audience is the protocol design, not the art:
+
+— ERC-721, 10,000 keys, one auctioned per day for ~22 years
+— No presale, no allowlist, no team discount
+— Holding the key gates write access to a curation/editorial stack
+— On transfer of the last key out of a wallet, the smart contract auto-removes the holder from the curated roster
+
+The story is curatorial standing as a smart-contract primitive. Founding artists include [N CONFIRMED].
+
+Doc + manifesto: cypherpunks.art/manifesto. Available for a 30-min interview this week.
+
+— [NAME]`},
+  {h:'The Defiant',n:'editorial',t:2,k:'DeFi-curious crypto audience',w:'Auction-protocol angle.',send:'D24.',av:'TD',c:6,
+   dm:`Subject: 22-year on-chain auction protocol — pitch
+
+Hi —
+
+CypherPunks launches [DATE]. For The Defiant: it's a protocol story.
+
+10,000 ERC-721 keys, one Dutch-style auctioned per day for ~22 years, no presale, no allowlist, no team discount. Holding gates curatorial standing across our editorial stack; on transfer of the last key out of a wallet, the contract auto-removes the holder from the curated roster.
+
+Available for interview. Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'Outland',n:'critical desk',t:2,k:'Curatorial/critical crypto art audience',w:'Manifesto-friendly.',send:'D17. Same as RCS, post-embargo.',av:'OL',c:7,
+   dm:`Subject: Curation as a primitive — pitch + manifesto
+
+Hi —
+
+CypherPunks: 10,000 pixel art keys on Ethereum, one auctioned per day for ~22 years. Holding gates curatorial listing across our editorial stack (CURAT'D, HASH'D, LIMIT'D). On transfer of the last key out of a registered wallet, the smart contract auto-removes the holder from the curated roster.
+
+For Outland's critical lens: this is an attempt to take the manifesto-shape of crypto art seriously rather than as marketing surface, and to move curation from policy to primitive.
+
+Founding artists [N CONFIRMED]. Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'kelaniNFT op-eds',n:'Kelani',t:3,k:'Independent voice',w:'Can amplify if he writes about it.',send:'Wave 2.',av:'KE',c:8,
+   dm:`Subject: Pitch for an op-ed
+
+Kelani —
+
+Quick one. CypherPunks launches [DATE]. The hook for your op-ed voice is the curation-as-primitive thesis: every platform that has promised sovereignty has ended up with a moderation queue, and we tried to fix it at the contract layer.
+
+If the manifesto resonates: cypherpunks.art/manifesto. Available for a quick chat or just to feed you context.
+
+— [NAME]`},
+  {h:'The Joy of NFTs',n:'Lex Marcano',t:3,k:'Podcast — bilingual EN/ES',w:'',send:'D24. Wave 2 podcast pitch.',av:'JN',c:1,
+   dm:`Subject: Founder interview pitch — CypherPunks · launches [DATE]
+
+Lex —
+
+Quick pitch for the show.
+
+CypherPunks launches [DATE]. Two threads I can riff on at length:
+
+(1) Why curation needs to be a primitive, not a permission — the manifesto thesis. Why every platform that promised sovereignty ended up with a moderation queue.
+
+(2) Slow distribution as culture — the 22-year auction decision.
+
+Spanish episode option if useful. Available [TIMEFRAMES]. cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'Proof Podcast',n:'Kevin Rose',t:3,k:'Hard to land',w:'Try if VVD or Aversano confirms.',send:'D24, only after a T1 collector or artist has confirmed.',av:'PR',c:2,
+   dm:`Subject: Founder interview pitch — CypherPunks · launches [DATE]
+
+Kevin —
+
+Pitch for Proof. CypherPunks launches [DATE], with founding artists including [N CONFIRMED — UPDATE]. Two threads for the show:
+
+(1) Curation as a smart-contract primitive — sell the key, the contract removes you, no committee. What it changes about platform-as-publication.
+
+(2) Slow distribution as culture — 22-year daily auction in a category dominated by burst mints.
+
+Available [TIMEFRAMES]. Manifesto: cypherpunks.art/manifesto
+
+— [NAME]`},
+  {h:'Bankless',n:'editorial',t:3,k:'If architecture-as-protocol angle resonates',w:'',send:'D24. Wave 2.',av:'BL',c:3,
+   dm:`Subject: Protocol pitch — CypherPunks daily auction + on-chain curation
+
+Hi —
+
+For Bankless: CypherPunks is a 22-year daily NFT auction protocol with on-chain curation enforcement. Holding the key gates curatorial standing on our editorial stack; on transfer the contract auto-removes the holder from the curated roster. No presale, no allowlist, no team discount.
+
+The story for your audience is the protocol architecture, not the art.
+
+Manifesto + tech doc: cypherpunks.art/manifesto. Founding artists include [N]. Mint [DATE].
+
+— [NAME]`}
+];
+
+const TWEETS = [
+  {id:'T-01',w:'D1 · 14:00 UTC · The Setup',c:`10,000 pixel art keys.
+
+One auctioned per day for the next twenty two years.
+
+Holding the key is the credential to participate in our curated stack. The contract removes you when you sell.
+
+Manifesto next week.`},
+  {id:'T-02',w:'D4 · 22:00 UTC · The Mechanic',c:`Most platforms grant standing and quietly revoke it.
+
+We made revocation a primitive instead. Sell the key, the contract removes you from the curated roster. No committee, no appeal.
+
+Skin in the game enforced on-chain.`},
+  {id:'T-03',w:'D7 · 21:00 UTC · The Why-Now',c:`Curation is the open problem in digital art.
+
+Every solution so far has been a permission system: a platform decides who's in, and the platform can change its mind.
+
+We are testing whether curation can be a primitive instead. cypherpunks.art`},
+  {id:'T-04',w:'D12 · 16:00 UTC · Manifesto Public · SINGLE TWEET, NO THREAD',c:`The manifesto is public.
+
+cypherpunks.art/manifesto
+
+We will not over-explain it. Read it.`},
+  {id:'T-05',w:'D14 · 20:00 UTC · The Pull-Quote',c:`"A platform that can revoke standing is not a platform. It is a publication."
+
+— from the manifesto, cypherpunks.art/manifesto`},
+  {id:'T-06',w:'D15 · 17:00 UTC · Founding Artist Reveal',c:`The founding artist roster.
+
+[NAMES, vertical, no commentary]
+
+Each holds a punk. Each is on the curated roster across CURAT'D, HASH'D, LIMIT'D from day one. Each can leave the roster at any time by selling — and the contract enforces that.
+
+Day one auction: [DATE].`},
+  {id:'T-07',w:'D15 follow-up · 19:00 UTC · For each artist, a quote',c:`[ARTIST NAME] on what they wanted from a curation platform:
+
+"[ONE-SENTENCE QUOTE FROM THE ARTIST, COLLECTED IN ADVANCE]"
+
+— their punk: [tokenId]`},
+  {id:'T-08',w:'D17 · 18:00 UTC · Mechanic Deep-Dive',c:`What holding a CypherPunk unlocks:
+
+— Listing rights on CURAT'D (live)
+— Editorial publishing on HASH'D (live)
+— Drop access on LIMIT'D (Q3)
+— Curatorial votes on the roster
+— Votes on protocol upgrades via vePUNK
+
+What selling the punk does:
+
+— The contract automatically removes you from the curated roster
+— Your editorial publishing access ends
+— Your votes end
+
+cypherpunks.art`},
+  {id:'T-09',w:'D26 · 19:00 UTC · The Night Before',c:`Tomorrow.
+
+cypherpunks.art`},
+  {id:'T-10',w:'D27 · 16:00 UTC · MINT LIVE',c:`Auction one is live.
+
+cypherpunks.art
+
+24 hours. Highest bid wins. Settlement triggers auction two automatically.
+
+For the next twenty two years.`},
+  {id:'T-11',w:'D27 · T-1h before close · The Pulse',c:`One hour to settlement.
+
+Current high bid: [X.XX ETH]
+Bidder: [ENS or shortened address]
+
+cypherpunks.art`},
+  {id:'T-12',w:'D28 · D+1 · Welcome the First Holder',c:`[ENS/HANDLE] holds the first CypherPunk.
+
+They are now on the curated roster across CURAT'D, HASH'D, LIMIT'D.
+
+If they sell it, the contract removes them. That's the deal.
+
+Auction two is live: cypherpunks.art`},
+  {id:'T-13',w:'D21 · 19:00 UTC · The Recap Thread',c:`Three weeks ago: nothing public.
+
+Now: manifesto out, founding roster announced, mint date set, [N] artists committed, [M] press placements coming.
+
+Six days to auction one. cypherpunks.art
+
+A short thread on what's coming next.
+
+[1/N]`},
+  {id:'T-14',w:'Reply seeds · ongoing',c:`Q: Why daily auctions?
+A: Slow distribution shapes culture. Burst mints don't.
+
+Q: Why the auto-removal?
+A: Curatorial standing should not be a thing a platform can grant and revoke. It should be a thing the holder controls.
+
+Q: Why pixel art?
+A: Bandwidth-cheap, on-chain-friendly, lineage-clear.
+
+Q: How is this different from Nouns?
+A: We borrow the daily-auction shape and acknowledge it openly. The departure is the curation primitive — Nouns is a treasury and brand. CypherPunks is a curation protocol.
+
+Q: Where can I read the manifesto?
+A: cypherpunks.art/manifesto`}
+];
+
+const TASKS = [
+  {w:'D1 14:00',t:'T-01 ships. Bio + pinned + header locked.'},
+  {w:'D2',t:'Full target list verified. Every handle live in last 30d.'},
+  {w:'D3',t:'Begin warm-engagement protocol. 10+ substantive replies/day on T1 artists.'},
+  {w:'D4 22:00',t:'T-02 ships.'},
+  {w:'D5',t:'Manifesto polish v1 done. All bespoke DMs reviewed by 2nd pair of eyes.'},
+  {w:'D7 21:00',t:'T-03 ships.'},
+  {w:'D8',t:'T1 artists batch 1: XCOPY, Coldie, Hackatao, Aversano, Gremplin.'},
+  {w:'D9',t:'T1 artists batch 2: Cherniak (if cond met), Claire Silver, DeeKay + 2 reserves.'},
+  {w:'D11',t:'CHECKPOINT: 2+ artist confirmations? Yes → T1 collectors. No → hold.'},
+  {w:'D12 16:00',t:'Manifesto goes public. T-04. Single tweet. No thread.'},
+  {w:'D13',t:'Punks-cultural figures DMs (9059, 6529, OTC).'},
+  {w:'D14 20:00',t:'T-05 ships.'},
+  {w:'D15 17:00',t:'FOUNDING ARTIST REVEAL. T-06. Each artist tweets within 4hr window.'},
+  {w:'D16 09:30',t:'Right Click Save pitch sent (E1).'},
+  {w:'D17 18:00',t:'T-08 ships. Mint date public.'},
+  {w:'D18',t:'NFT Now pitch sent (E2). T2 collector DMs begin.'},
+  {w:'D19 21:00',t:'Twitter Space.'},
+  {w:'D21 19:00',t:'T-13 recap thread.'},
+  {w:'D22 22:00',t:'Manifesto excerpt tweet.'},
+  {w:'D23',t:'Decrypt pitch sent (E3). Auction explainer tweet.'},
+  {w:'D24',t:'Podcast pitches × 4. T3 DMs begin.'},
+  {w:'D25',t:'Founding artist spotlight #1.'},
+  {w:'D26 19:00',t:'T-09 ("Tomorrow.") ships.'},
+  {w:'D27 16:00',t:'AUCTION ONE LIVE. Follow §10 hour-by-hour.'},
+  {w:'D28 16:00',t:'Settlement. T-12. Welcome first holder.'},
+  {w:'D29',t:'Onboard first holder publicly. CURAT\'D listing on camera.'},
+  {w:'D30',t:'Post-mortem: what worked, what didn\'t, what\'s next.'}
+];
+
+// ─── HEATMAP DATA ─────────────────────────────────────────
+const HEATMAPS = {
+  us:{label:'Best windows: Tue/Wed 16:00–18:00 UTC (lunch ET / morning PT) and Sat 16:00–18:00 UTC (the strongest art-Twitter window of the week — hence mint day). Worst: Mon morning UTC and Fri evening UTC.',
+    rows:[[0,0,0,0,1,2,2,3,3,2,2,2,3,4,4,4,3,3,2,2,1,1,0,0],[0,0,0,0,1,2,3,3,3,3,3,3,4,5,5,4,4,3,3,2,2,1,1,0],[0,0,0,0,1,2,3,3,3,3,3,3,4,5,5,5,4,4,3,3,2,1,1,0],[0,0,0,0,1,2,3,3,3,3,3,3,4,4,5,4,4,3,3,2,2,1,1,0],[0,0,0,0,1,2,2,3,3,3,2,2,3,3,3,2,2,2,1,1,1,0,0,0],[0,0,0,0,0,1,1,2,2,3,3,3,4,5,5,5,4,4,4,3,3,2,1,1],[0,0,0,0,0,1,1,2,2,2,3,3,3,4,4,3,3,2,2,2,1,1,0,0]]},
+  eu:{label:'Best windows: Tue/Wed 18:00–22:00 UTC (afternoon-evening CET). Hackatao, Trevor Jones, Reuben Wu all in this band. Avoid early morning UTC.',
+    rows:[[0,0,0,0,1,2,3,3,3,3,3,3,3,3,2,2,2,1,1,0,0,0,0,0],[0,0,0,0,1,3,4,4,4,4,5,4,4,3,3,2,2,1,1,0,0,0,0,0],[0,0,0,0,1,3,4,4,4,5,5,5,4,4,3,3,2,2,1,1,0,0,0,0],[0,0,0,0,1,2,3,4,4,4,4,4,4,3,3,2,2,1,1,0,0,0,0,0],[0,0,0,0,1,2,3,3,3,3,3,2,2,2,1,1,1,0,0,0,0,0,0,0],[0,0,0,0,0,1,2,2,3,3,3,3,4,4,4,3,3,2,2,1,1,0,0,0],[0,0,0,0,0,1,1,2,2,3,3,3,3,3,3,2,2,1,1,0,0,0,0,0]]},
+  asia:{label:'Best windows: Wed 00:00–04:00 UTC (Wed morning JST/KST/SGT). Asian audiences engage with art Twitter mostly mid-week.',
+    rows:[[2,3,3,2,1,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,1,1,2,2],[3,4,4,3,2,1,1,0,0,0,0,1,1,1,1,1,1,1,0,0,1,2,2,3],[4,5,4,3,2,1,1,0,0,0,0,1,1,1,1,1,1,1,0,0,1,2,3,3],[4,4,4,3,2,1,1,0,0,0,0,1,1,1,1,1,1,1,0,0,1,2,3,3],[3,4,3,3,2,1,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,2],[2,2,2,2,1,1,0,0,0,0,0,1,2,3,3,3,3,2,2,1,1,1,2,2],[2,2,2,2,1,0,0,0,0,0,0,1,1,2,2,2,2,1,1,1,1,0,0,1]]},
+  press:{label:'Best windows: Tue/Wed 09:30–11:00 UTC (after editorial standup, before noon-ET deadlines). NEVER pitch press Friday afternoon UTC. Avoid weekends entirely.',
+    rows:[[0,0,0,0,1,2,3,3,3,2,2,2,2,2,1,1,1,0,0,0,0,0,0,0],[0,0,0,0,2,4,5,4,4,3,3,3,3,2,2,1,1,0,0,0,0,0,0,0],[0,0,0,0,2,4,5,5,4,4,3,3,2,2,2,1,1,1,0,0,0,0,0,0],[0,0,0,0,2,3,4,4,3,3,3,2,2,2,2,1,1,0,0,0,0,0,0,0],[0,0,0,0,1,2,2,2,2,2,1,1,1,1,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0]]}
+};
+
+// ─── STATE ─────────────────────────────────────────────────
+let STATE = {targets:{},tasks:{},taskNotes:{},tweets:{},emails:{}};
+try{
+  const s = localStorage.getItem(STORE_KEY);
+  if(s){
+    const loaded = JSON.parse(s);
+    STATE.targets = loaded.targets || {};
+    STATE.tasks = loaded.tasks || {};
+    STATE.taskNotes = loaded.taskNotes || {};
+    STATE.tweets = loaded.tweets || {};
+    STATE.emails = loaded.emails || {};
+    // migrate legacy: number-only state → object
+    for(const k in STATE.targets){
+      if(typeof STATE.targets[k] === 'number'){
+        STATE.targets[k] = {status: STATE.targets[k], date:'', notes:''};
+      }
+    }
+  }
+}catch(e){}
+function saveState(){try{localStorage.setItem(STORE_KEY, JSON.stringify(STATE));}catch(e){}}
+
+// generic CRM accessor — works for any collection
+function getRecord(col, key){
+  if(!STATE[col][key]) STATE[col][key] = {status:0, date:'', notes:''};
+  return STATE[col][key];
+}
+function setStatus(col, key, v, labels){
+  const r = getRecord(col,key);
+  r.status = v;
+  if(v === 0){ r.date = ''; }
+  else if(!r.date){ r.date = new Date().toISOString().slice(0,10); }
+  saveState(); updateStats();
+}
+function setDate(col, key, d){ getRecord(col,key).date = d; saveState(); }
+function setNotes(col, key, n){ getRecord(col,key).notes = n; saveState(); }
+
+// targets-specific (kept for backward compat)
+const targetKey = (kind, h) => `${kind}:${h}`;
+function getTarget(kind, h){ return getRecord('targets', targetKey(kind,h)); }
+const getTargetState = (kind, h) => getTarget(kind,h).status || 0;
+function setTargetState(kind, h, v){ setStatus('targets', targetKey(kind,h), v); }
+function setTargetDate(kind, h, d){ setDate('targets', targetKey(kind,h), d); }
+function setTargetNotes(kind, h, n){ setNotes('targets', targetKey(kind,h), n); }
+
+// ─── RENDERING ────────────────────────────────────────────
+function svgIcon(kind){
+  if(kind==='x') return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>';
+  if(kind==='globe') return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';
+  if(kind==='chev') return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  return '';
+}
+
+function renderRow(item, kind){
+  const t = getTarget(kind, item.h);
+  const state = t.status || 0;
+  const date = t.date || '';
+  const notes = t.notes || '';
+  const tierLabel = item.t === 1 ? 'TIER 1' : item.t === 2 ? 'TIER 2' : 'TIER 3';
+  const dateLabel = state === 1 ? 'Sent' : state === 2 ? 'Replied' : state === 3 ? 'Confirmed' : 'Date';
+  return `
+    <div class="row" data-h="${item.h}" data-kind="${kind}" data-t="${item.t}" data-status="${state}" data-search="${(item.h+' '+item.n+' '+item.k).toLowerCase()}">
+      <div class="av c${item.c}">${item.av}</div>
+      <div class="nm">${item.n}<small>${tierLabel} · ${item.k}</small></div>
+      <div class="ic">${svgIcon('x')}${svgIcon('globe')}</div>
+      <span class="sd" data-sd-state="${state}" title="${STATE_LABELS[state]}"></span>
+      <div class="chev">${svgIcon('chev')}</div>
+    </div>
+    <div class="exp" data-exp="${item.h}">
+      <div class="exp-pad">
+        <div class="crm-bar">
+          <button class="pip" data-pip="${kind}:${item.h}" data-state="${state}">${STATE_LABELS[state]}</button>
+          <span class="tag">${item.h}</span>
+          <span class="tag t${item.t}">${tierLabel}</span>
+        </div>
+
+        <div class="crm-grid">
+          <label class="crm-fld">
+            <span class="crm-l">${dateLabel}</span>
+            <input type="date" class="crm-date" data-date="${kind}:${item.h}" value="${date}">
+          </label>
+          <label class="crm-fld crm-fld-notes">
+            <span class="crm-l">Notes</span>
+            <textarea class="crm-notes" data-notes="${kind}:${item.h}" placeholder="Quick reaction, threads to follow up, what they said..." rows="2">${notes.replace(/</g,'&lt;')}</textarea>
+          </label>
+        </div>
+
+        <p class="crm-meta"><b>Why them.</b> ${item.w}</p>
+        <p class="crm-meta crm-send"><b>Send.</b> ${item.send}</p>
+
+        <div class="cp">
+          <div class="cp-head"><span class="l">${kind==='press'?'EMAIL':'DM'} · ${item.n}</span><button class="cbtn copy">COPY</button></div>
+          <div class="cp-body">${item.dm}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderTargets(){
+  document.getElementById('listArt').innerHTML = ARTISTS.map(a => renderRow(a,'art')).join('');
+  document.getElementById('listCol').innerHTML = COLLECTORS.map(c => renderRow(c,'col')).join('');
+  document.getElementById('listPress').innerHTML = PRESS.map(p => renderRow(p,'press')).join('');
+}
+
+function renderTweets(){
+  document.getElementById('tweetsContainer').innerHTML = TWEETS.map(tw => {
+    const r = getRecord('tweets', tw.id);
+    const status = r.status || 0;
+    const date = r.date || '';
+    const notes = r.notes || '';
+    const dateLabel = status === 1 ? 'Drafted' : status === 2 ? 'Shipped' : 'Date';
+    return `
+      <div class="cp" data-tw="${tw.id}">
+        <div class="cp-head">
+          <span class="l">${tw.id} · ${tw.w}</span>
+          <button class="cbtn copy">COPY</button>
+        </div>
+        <div class="cp-body">${tw.c}</div>
+        <div class="cp-crm">
+          <button class="pip" data-pip-tweet="${tw.id}" data-state="${status}" data-labels="tw">${TWEET_LABELS[status]}</button>
+          <input type="date" class="crm-date crm-date-inline" data-date-tweet="${tw.id}" value="${date}" aria-label="${dateLabel}">
+          <input type="text" class="crm-notes-inline" data-notes-tweet="${tw.id}" value="${notes.replace(/"/g,'&quot;')}" placeholder="Notes — engagement, replies to follow up...">
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderEmails(){
+  const E = PRESS.slice(0,5).map((p,i)=> ({id:`E${i+1}`, w:`${p.h} · ${p.n}`, c:p.dm}));
+  document.getElementById('emailsContainer').innerHTML = E.map(e => {
+    const r = getRecord('emails', e.id);
+    const status = r.status || 0;
+    const date = r.date || '';
+    const notes = r.notes || '';
+    const dateLabel = status === 1 ? 'Drafted' : status === 2 ? 'Sent' : status === 3 ? 'Replied' : 'Date';
+    return `
+      <div class="cp" data-em="${e.id}">
+        <div class="cp-head">
+          <span class="l">${e.id} · ${e.w}</span>
+          <button class="cbtn copy">COPY</button>
+        </div>
+        <div class="cp-body">${e.c}</div>
+        <div class="cp-crm">
+          <button class="pip" data-pip-email="${e.id}" data-state="${status}" data-labels="em">${EMAIL_LABELS[status]}</button>
+          <input type="date" class="crm-date crm-date-inline" data-date-email="${e.id}" value="${date}" aria-label="${dateLabel}">
+          <input type="text" class="crm-notes-inline" data-notes-email="${e.id}" value="${notes.replace(/"/g,'&quot;')}" placeholder="Notes — response, next step...">
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderTasks(){
+  document.getElementById('tkContainer').innerHTML = TASKS.map((t,i) => {
+    const done = STATE.tasks[i] ? 'done' : '';
+    const note = STATE.taskNotes[i] || '';
+    return `
+      <div class="tk-item">
+        <div class="tk-row ${done}" data-tk="${i}">
+          <span class="box"></span>
+          <span class="when">${t.w}</span>
+          <span class="what">${t.t}</span>
+        </div>
+        <input type="text" class="tk-note" data-tk-note="${i}" value="${note.replace(/"/g,'&quot;')}" placeholder="Note...">
+      </div>
+    `;
+  }).join('');
+}
+
+function renderHeat(key){
+  const H = HEATMAPS[key];
+  const days = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+  let html = '<div class="heat-grid">';
+  html += '<div class="hh"></div>';
+  for(let h=0;h<24;h+=2) html += `<div class="hh">${h}</div><div class="hh"></div>`;
+  for(let d=0;d<7;d++){
+    html += `<div class="hd">${days[d]}</div>`;
+    for(let h=0;h<24;h++){
+      const v = H.rows[d][h];
+      html += `<div class="hc" data-v="${v}" title="${days[d]} ${h}:00 UTC · level ${v}"></div>`;
+    }
+  }
+  html += '</div>';
+  html += `<div class="heat-leg">low <span class="scale"><span style="background:#ecebe5"></span><span style="background:#f5d6c8"></span><span style="background:#f0a884"></span><span style="background:#e8755a"></span><span style="background:#e8392c"></span><span style="background:#a01e10"></span></span> high</div>`;
+  document.getElementById('heatHost').innerHTML = html;
+  document.getElementById('heatNote').innerHTML = `<b>${key.toUpperCase()}.</b> ${H.label}`;
+}
+
+// ─── STATS ────────────────────────────────────────────────
+function updateStats(){
+  const all = [...ARTISTS.map(a=>['art',a.h]), ...COLLECTORS.map(c=>['col',c.h])];
+  const total = all.length;
+  const sent = all.filter(([k,h]) => getTargetState(k,h) >= 1).length;
+  const reply = all.filter(([k,h]) => getTargetState(k,h) >= 2).length;
+  const conf = all.filter(([k,h]) => getTargetState(k,h) >= 3).length;
+  const tasks = Object.values(STATE.tasks).filter(Boolean).length;
+  const tweetsShipped = TWEETS.filter(t => (STATE.tweets[t.id]?.status||0) >= 2).length;
+  const emailsSent = Object.keys(STATE.emails || {}).filter(k => (STATE.emails[k]?.status||0) >= 2).length;
+
+  document.querySelectorAll('[data-stat="sent"]').forEach(e=>e.textContent=sent);
+  document.querySelectorAll('[data-stat="reply"]').forEach(e=>e.textContent=reply);
+  document.querySelectorAll('[data-stat="conf"]').forEach(e=>e.textContent=conf);
+  document.querySelectorAll('[data-stat="task"]').forEach(e=>e.textContent=tasks);
+  document.querySelectorAll('[data-stat="tweets"]').forEach(e=>e.textContent=tweetsShipped);
+  document.querySelectorAll('[data-stat="emails"]').forEach(e=>e.textContent=emailsSent);
+  document.querySelectorAll('[data-bar="sent"]').forEach(e=>e.style.width=(sent/total*100)+'%');
+  document.querySelectorAll('[data-bar="reply"]').forEach(e=>e.style.width=(reply/total*100)+'%');
+  document.querySelectorAll('[data-bar="conf"]').forEach(e=>e.style.width=(conf/total*100)+'%');
+  document.querySelectorAll('[data-bar="task"]').forEach(e=>e.style.width=(tasks/TASKS.length*100)+'%');
+  document.querySelectorAll('[data-bar="tweets"]').forEach(e=>e.style.width=(tweetsShipped/TWEETS.length*100)+'%');
+  document.querySelectorAll('[data-bar="emails"]').forEach(e=>e.style.width=(emailsSent/5*100)+'%');
+
+  const cnt = document.getElementById('targetsConfirmed'); if(cnt) cnt.textContent = conf;
+  const td = document.getElementById('taskDoneN'); if(td) td.textContent = tasks;
+  const tc = document.getElementById('trackerCount');
+  if(tc){ const left = TASKS.length - tasks; tc.textContent = left; tc.style.display = left ? '' : 'none'; }
+}
+
+// ─── EVENTS ───────────────────────────────────────────────
+function bind(){
+  // expand row
+  document.body.addEventListener('click', e=>{
+    const row = e.target.closest('.row');
+    if(row && !e.target.closest('.pip') && !e.target.closest('.cbtn')){
+      const exp = row.parentElement.querySelector(`.exp[data-exp="${row.dataset.h}"]`);
+      if(exp){
+        const wasOpen = exp.classList.contains('show');
+        // close other open rows in same list
+        row.parentElement.querySelectorAll('.exp.show').forEach(o=>o.classList.remove('show'));
+        row.parentElement.querySelectorAll('.row.open').forEach(o=>o.classList.remove('open'));
+        if(!wasOpen){ exp.classList.add('show'); row.classList.add('open'); }
+      }
+    }
+    // pipeline pill — targets, tweets, emails
+    if(e.target.classList.contains('pip')){
+      e.stopPropagation();
+      const cur = parseInt(e.target.dataset.state||'0',10);
+
+      // tweet pip (3 states)
+      if(e.target.dataset.pipTweet){
+        const id = e.target.dataset.pipTweet;
+        const next = (cur+1) % 3;
+        e.target.dataset.state = next;
+        e.target.textContent = TWEET_LABELS[next];
+        setStatus('tweets', id, next);
+        const cp = e.target.closest('.cp');
+        const di = cp?.querySelector('.crm-date-inline');
+        if(di) di.value = getRecord('tweets', id).date || '';
+        return;
+      }
+      // email pip (4 states)
+      if(e.target.dataset.pipEmail){
+        const id = e.target.dataset.pipEmail;
+        const next = (cur+1) % 4;
+        e.target.dataset.state = next;
+        e.target.textContent = EMAIL_LABELS[next];
+        setStatus('emails', id, next);
+        const cp = e.target.closest('.cp');
+        const di = cp?.querySelector('.crm-date-inline');
+        if(di) di.value = getRecord('emails', id).date || '';
+        return;
+      }
+      // target pip (4 states)
+      const [kind,h] = e.target.dataset.pip.split(':');
+      const next = (cur+1) % 4;
+      e.target.dataset.state = next;
+      e.target.textContent = STATE_LABELS[next];
+      setTargetState(kind, h, next);
+      const t = getTarget(kind, h);
+      const exp = e.target.closest('.exp');
+      if(exp){
+        const dl = exp.querySelector('.crm-fld .crm-l');
+        if(dl) dl.textContent = next === 1 ? 'Sent' : next === 2 ? 'Replied' : next === 3 ? 'Confirmed' : 'Date';
+        const di = exp.querySelector('.crm-date');
+        if(di) di.value = t.date || '';
+      }
+      const row = exp?.previousElementSibling;
+      if(row){
+        row.dataset.status = next;
+        const sd = row.querySelector('.sd');
+        if(sd){ sd.dataset.sdState = next; sd.title = STATE_LABELS[next]; }
+      }
+      applyFilters();
+    }
+    // copy
+    if(e.target.classList.contains('copy')){
+      e.stopPropagation();
+      const cp = e.target.closest('.cp');
+      const body = cp?.querySelector('.cp-body');
+      if(body){
+        navigator.clipboard.writeText(body.innerText).then(()=>{
+          const o = e.target.textContent; e.target.textContent = 'COPIED'; e.target.classList.add('ok');
+          setTimeout(()=>{ e.target.textContent = o; e.target.classList.remove('ok'); }, 1400);
+        });
+      }
+    }
+    // task toggle
+    const tk = e.target.closest('.tk-row');
+    if(tk && !e.target.closest('.tk-note')){
+      const i = tk.dataset.tk;
+      const newVal = !STATE.tasks[i];
+      STATE.tasks[i] = newVal;
+      tk.classList.toggle('done', newVal);
+      saveState(); updateStats();
+    }
+    // segmented tabs
+    if(e.target.matches('.seg button')){
+      const seg = e.target.closest('.seg');
+      const wrap = seg.parentElement;
+      seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b===e.target));
+      if(seg.id === 'targetSeg'){
+        const k = e.target.dataset.tab;
+        wrap.querySelectorAll(':scope > .panel').forEach(p=>p.classList.toggle('on', p.dataset.panel===k));
+      }
+      if(seg.id === 'heatSeg'){
+        renderHeat(e.target.dataset.h);
+      }
+    }
+    // tier filter
+    if(e.target.closest('#filterTier')){
+      const btn = document.getElementById('filterTier');
+      const cur = btn.dataset.tier || 'all';
+      const next = cur === 'all' ? '1' : cur === '1' ? '2' : cur === '2' ? '3' : 'all';
+      btn.dataset.tier = next;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>${next==='all'?'ALL TIERS':'TIER '+next}`;
+      btn.classList.toggle('on', next !== 'all');
+      applyFilters();
+    }
+    // status filter
+    if(e.target.closest('#filterStatus')){
+      const btn = document.getElementById('filterStatus');
+      const cur = btn.dataset.status || 'all';
+      const order = ['all','0','1','2','3'];
+      const labels = {all:'ALL STATUS','0':'NOT STARTED','1':'DM SENT','2':'REPLIED','3':'CONFIRMED'};
+      const next = order[(order.indexOf(cur)+1) % order.length];
+      btn.dataset.status = next;
+      btn.textContent = labels[next];
+      btn.classList.toggle('on', next !== 'all');
+      applyFilters();
+    }
+    // chart toggle
+    if(e.target.closest('[data-curve]')){
+      const btn = e.target.closest('[data-curve]');
+      const path = document.getElementById(btn.dataset.curve);
+      if(path){
+        const off = path.style.display === 'none';
+        path.style.display = off ? '' : 'none';
+        btn.classList.toggle('off', !off);
+      }
+    }
+  });
+
+  // search
+  const ts = document.getElementById('targetSearch');
+  if(ts) ts.addEventListener('input', applyFilters);
+  const ps = document.getElementById('pressSearch');
+  if(ps) ps.addEventListener('input', e=>{
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll('#listPress .row').forEach(r=>{
+      r.style.display = r.dataset.search.includes(q) ? '' : 'none';
+    });
+  });
+
+  // CRM date + notes — change saves
+  document.body.addEventListener('change', e=>{
+    if(e.target.classList.contains('crm-date')){
+      if(e.target.dataset.dateTweet){ setDate('tweets', e.target.dataset.dateTweet, e.target.value); return; }
+      if(e.target.dataset.dateEmail){ setDate('emails', e.target.dataset.dateEmail, e.target.value); return; }
+      if(e.target.dataset.date){
+        const [kind,h] = e.target.dataset.date.split(':');
+        setTargetDate(kind, h, e.target.value);
+      }
+    }
+  });
+  document.body.addEventListener('input', e=>{
+    if(e.target.classList.contains('crm-notes')){
+      const [kind,h] = e.target.dataset.notes.split(':');
+      setTargetNotes(kind, h, e.target.value);
+      return;
+    }
+    if(e.target.classList.contains('crm-notes-inline')){
+      if(e.target.dataset.notesTweet){ setNotes('tweets', e.target.dataset.notesTweet, e.target.value); return; }
+      if(e.target.dataset.notesEmail){ setNotes('emails', e.target.dataset.notesEmail, e.target.value); return; }
+    }
+    if(e.target.classList.contains('tk-note')){
+      const i = e.target.dataset.tkNote;
+      STATE.taskNotes[i] = e.target.value;
+      saveState();
+    }
+  });
+
+  // sidebar nav active state on scroll
+  const links = document.querySelectorAll('.nav a');
+  const secs = document.querySelectorAll('section.section');
+  function setActive(){
+    let cur = secs[0].id;
+    const sy = window.scrollY + 80;
+    secs.forEach(s=>{ if(s.offsetTop <= sy) cur = s.id; });
+    links.forEach(a=>a.classList.toggle('on', a.getAttribute('href')==='#'+cur));
+  }
+  window.addEventListener('scroll', setActive, {passive:true});
+
+  // EXPORT CSV
+  const exportBtn = document.getElementById('exportBtn');
+  if(exportBtn) exportBtn.addEventListener('click', ()=>{
+    const rows = [['type','id','name','tier','status','date','notes']];
+    // targets
+    const allTargets = [
+      ...ARTISTS.map(a=>['artist',a]),
+      ...COLLECTORS.map(c=>['collector',c]),
+      ...PRESS.map(p=>['press',p])
+    ];
+    for(const [kind,item] of allTargets){
+      const k = kind === 'artist' ? 'art' : kind === 'collector' ? 'col' : 'press';
+      const t = getTarget(k, item.h);
+      const status = STATE_LABELS[t.status||0];
+      const notes = (t.notes||'').replace(/\n/g,' / ');
+      rows.push([kind, item.h, item.n, 'T'+item.t, status, t.date||'', notes]);
+    }
+    // tweets
+    for(const tw of TWEETS){
+      const r = STATE.tweets[tw.id] || {status:0,date:'',notes:''};
+      rows.push(['tweet', tw.id, tw.w, '—', TWEET_LABELS[r.status||0], r.date||'', (r.notes||'').replace(/\n/g,' / ')]);
+    }
+    // emails
+    for(let i=0;i<5;i++){
+      const id = 'E'+(i+1);
+      const r = STATE.emails[id] || {status:0,date:'',notes:''};
+      const p = PRESS[i];
+      rows.push(['email', id, `${p.h} · ${p.n}`, '—', EMAIL_LABELS[r.status||0], r.date||'', (r.notes||'').replace(/\n/g,' / ')]);
+    }
+    // tasks
+    for(let i=0;i<TASKS.length;i++){
+      const t = TASKS[i];
+      const done = STATE.tasks[i] ? 'DONE' : 'PENDING';
+      const note = (STATE.taskNotes[i]||'').replace(/\n/g,' / ');
+      rows.push(['task', '#'+(i+1), `${t.w} · ${t.t}`, '—', done, '', note]);
+    }
+
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const today = new Date().toISOString().slice(0,10);
+    a.href = url; a.download = `cypherpunks-gtm-${today}.csv`;
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+    const orig = exportBtn.innerHTML;
+    exportBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>EXPORTED';
+    setTimeout(()=>{ exportBtn.innerHTML = orig; }, 1600);
+  });
+
+  // RESET ALL
+  const resetBtn = document.getElementById('resetBtn');
+  if(resetBtn) resetBtn.addEventListener('click', ()=>{
+    if(!confirm('Reset all CRM data? This clears every status, date, note, and task — and cannot be undone. Export first if you want a backup.')) return;
+    STATE = {targets:{},tasks:{},taskNotes:{},tweets:{},emails:{}};
+    saveState();
+    renderTargets();
+    renderTasks();
+    renderTweets();
+    renderEmails();
+    updateStats();
+  });
+}
+
+function applyFilters(){
+  const ts = document.getElementById('targetSearch');
+  const ft = document.getElementById('filterTier');
+  const fs = document.getElementById('filterStatus');
+  const q = (ts?.value || '').toLowerCase();
+  const tier = ft?.dataset.tier || 'all';
+  const status = fs?.dataset.status || 'all';
+  document.querySelectorAll('#listArt .row, #listCol .row').forEach(r=>{
+    const matchQ = !q || r.dataset.search.includes(q);
+    const matchT = tier === 'all' || r.dataset.t === tier;
+    const matchS = status === 'all' || r.dataset.status === status;
+    const show = matchQ && matchT && matchS;
+    r.style.display = show ? '' : 'none';
+    // also hide expanded panel if hiding row
+    const exp = r.nextElementSibling;
+    if(exp && exp.classList.contains('exp') && !show){
+      exp.style.display = 'none';
+      exp.classList.remove('show');
+      r.classList.remove('open');
+    } else if(exp && exp.classList.contains('exp') && show && !exp.classList.contains('show')){
+      exp.style.display = '';
+    }
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+renderTargets();
+renderTweets();
+renderEmails();
+renderTasks();
+renderHeat('us');
+bind();
+updateStats();
+</script>
+</body>
+</html>

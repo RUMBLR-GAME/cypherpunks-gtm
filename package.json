@@ -1,0 +1,10 @@
+{
+  "name": "cypherpunks-gtm",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Launch console for CypherPunks — CRM, calendar, growth model, copy library.",
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "build": "echo 'static site, no build step'"
+  }
+}
